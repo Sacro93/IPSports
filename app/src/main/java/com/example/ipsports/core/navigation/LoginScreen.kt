@@ -25,10 +25,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
+
 
 @Composable
-fun LoginScreen(navigateToHome: () -> Unit) {
+fun LoginScreen(navigateToHome: () -> Unit, navigateToLoginCredentials: () -> Unit  ) {
     Column(
 
         modifier = Modifier
@@ -62,7 +62,7 @@ fun LoginScreen(navigateToHome: () -> Unit) {
         )
         {
             Button(
-                onClick = { navigateToHome() },
+                onClick = {navigateToLoginCredentials() },
                 modifier = Modifier
                     .width(200.dp)
                     .height(50.dp)

@@ -17,7 +17,15 @@ fun NavigationWrapper() {
         //para poder definir y navegar a ellas
         composable<Login> {
 
-           LoginScreen{navController.navigate(Home)}
+            LoginScreen(
+                navigateToHome = { navController.navigate(Home) },
+                navigateToLoginCredentials = { navController.navigate(LoginInsertCredentials) }
+            )
+        }
+        composable<LoginInsertCredentials> {
+            LoginInsertCredentials(
+                navigateToHome = { navController.navigate(Home) }
+            )
         }
         composable<Home> {
             HomeScreen()

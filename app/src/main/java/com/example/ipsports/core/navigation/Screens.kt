@@ -15,3 +15,5 @@ object Home
 //si no mandamos parametros podemos usar un bojeto
 //si mandamos aprametros debemos mandar una data class
 
+@Serializable
+object LoginInsertCredentials

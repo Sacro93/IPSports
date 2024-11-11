@@ -15,12 +15,8 @@ fun HomeScreen(){
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
 
         //para coger el espacio sobrante
-        Spacer(modifier = Modifier.weight(1f))
-        Text(text = "HOME Screen", fontSize = 25.sp)
-        Spacer(modifier = Modifier.weight(1f))
-        Button(onClick = {  }) {
-            Text(text = "Datalle")
-        }
+
+
 
 
         Spacer(modifier = Modifier.weight(1f))
