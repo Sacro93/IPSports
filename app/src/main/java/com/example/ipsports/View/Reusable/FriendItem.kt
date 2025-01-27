@@ -20,7 +20,7 @@ import coil.compose.AsyncImage
 // Una lista de amigos para invitarlos a eventos.
 //Una sección de amigos conectados o contactos frecuentes..
 
-@Preview
+
 @Composable
 fun FriendItem(
     name: String,

@@ -22,16 +22,12 @@ fun LoginEntryScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.horizontalGradient(
+                brush = Brush.verticalGradient(
                     colors = listOf(
-                       // Color(0xFFFF7EB3), // Rosa vibrante
-                       // Color(0xFFFDFFB6)  // Amarillo pastel cálido
 
-                            //   Color(0xFF8EC5FC), // Azul pastel suave
-                      //  Color(0xFFE0C3FC)  // Lavanda clara
 
-                                Color(0xFF457B9D), // Azul profundo
-                       Color(0xFFA8DADC)  // Azul claro
+                        Color(0xFF457B9D), // Azul profundo
+                        Color(0xFFA8DADC)  // Azul claro
                     )
                 )
             ),

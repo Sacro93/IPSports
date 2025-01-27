@@ -53,8 +53,8 @@ fun LogoScreen() {
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF000000), // Negro en la parte superior
-                        Color(0xFF555555)  // Gris oscuro en la parte inferior
+                        Color(0xFF457B9D), // Azul profundo
+                        Color(0xFFA8DADC)  // Azul claro
                     )
                 )
             ),
@@ -68,20 +68,13 @@ fun LogoScreen() {
             Box(
                 modifier = Modifier
                     .size(120.dp)
-                    .scale(scale) // Aplica la animación de escala
+                    .scale(scale)
                     .background(MaterialTheme.colorScheme.primary, CircleShape)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Animación de opacidad para el texto
-            Text(
-                text = "Mi Aplicación",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = alpha), // Aplica la opacidad animada
-                textAlign = TextAlign.Center,
-                fontSize = 24.sp
-            )
+
         }
     }
 }
