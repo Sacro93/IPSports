@@ -65,6 +65,13 @@ dependencies {
 // Navegación en Compose
     implementation(libs.androidx.compose.material.core)
     implementation(libs.androidx.media3.exoplayer)
+//dependencias mas nuevas de material 01/2025
+        implementation (libs.androidx.material3.v110)
+        implementation (libs.ui)
+        implementation (libs.androidx.foundation)
+        implementation (libs.androidx.runtime)
+        implementation (libs.androidx.ui.text)
+
 
 
     // Debugging
