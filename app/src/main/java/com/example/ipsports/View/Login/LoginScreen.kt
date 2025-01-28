@@ -1,4 +1,4 @@
-package com.example.ipsports.View
+package com.example.ipsports.View.Login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

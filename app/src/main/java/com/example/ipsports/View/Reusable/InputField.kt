@@ -15,7 +15,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ipsports.View.LoginScreen
 import com.example.ipsports.ui.theme.IpSportsTheme
 
 //Componente genérico para campos de texto (email, contraseña, detalles del evento).
