@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ipsports.R
+import com.example.ipsports.View.Event.Reusable.EventCreationProgressBar
 import com.example.ipsports.View.Reusable.ButtonPrimary
 import com.example.ipsports.View.Event.Reusable.SportSelectionCard
 import com.example.ipsports.ui.theme.IpSportsTheme
@@ -29,6 +30,8 @@ fun SportSelectionScreen(
         Pair("Paddle", R.drawable.paddle),
         Pair("Tenis", R.drawable.tennis)
     )
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -43,18 +46,21 @@ fun SportSelectionScreen(
                 )
             ),
         contentAlignment = Alignment.Center
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
+
+
+            EventCreationProgressBar(currentPage = 2, totalPages = 4)
             Spacer(modifier = Modifier.height(24.dp))
             // Título
             Text(
                 text = "Selecciona un Deporte",
                 style = MaterialTheme.typography.headlineMedium,
-                color = White,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -88,8 +94,8 @@ fun SportSelectionScreen(
             )
         }
     }
-}
 
+}
 
 @Preview(showBackground = true)
 @Composable

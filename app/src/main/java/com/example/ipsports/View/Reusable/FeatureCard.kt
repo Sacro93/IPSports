@@ -21,7 +21,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
+import com.example.ipsports.R
+import com.example.ipsports.ui.theme.IpSportsTheme
 
 @Composable
 fun FeatureCard(
@@ -33,40 +34,50 @@ fun FeatureCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(200.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
+            .height(160.dp) // Tamaño más compacto
+            .clip(MaterialTheme.shapes.medium)
+            .clickable { onClick() }
     ) {
         // Imagen de fondo
         Image(
             painter = painterResource(id = imageRes),
             contentDescription = title,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.matchParentSize()
         )
 
-        // Overlay para texto
+        // Gradiente sobre la imagen
         Box(
             modifier = Modifier
-                .fillMaxSize()
+                .matchParentSize()
                 .background(
-                    Brush.verticalGradient(
+                    brush = Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            Color.Black.copy(alpha = 0.6f)
+                            Color(0xFF457B9D).copy(alpha = 0.6f) // Azul profundo semitransparente
                         )
                     )
                 )
         )
 
-        // Texto de la tarjeta
+        // Título en la parte inferior
         Text(
             text = title,
-            style = MaterialTheme.typography.headlineMedium,
-            color = Color.White,
+            style = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(16.dp)
+        )
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun FeatureCardPreview() {
+    IpSportsTheme {
+        FeatureCard(
+            imageRes = R.drawable.brc,
+            title = "Create Your Own Event",
+            onClick = {}
         )
     }
 }

@@ -1,4 +1,4 @@
-package com.example.ipsports.View.Reusable
+package com.example.ipsports.View.HomeScreen
 
 
 import androidx.compose.foundation.clickable

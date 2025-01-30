@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.ipsports"
-        minSdk = 25
+        minSdk = 28
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -48,8 +48,7 @@ dependencies {
 
 
 // Navegación en Compose
-    implementation(libs.androidx.compose.material.core)
-    implementation(libs.androidx.media3.exoplayer)
+
 
     implementation(libs.coil.compose)
     // Componentes principales de Compose
@@ -64,7 +63,7 @@ dependencies {
 
 // Navegación en Compose
     implementation(libs.androidx.compose.material.core)
-    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.compose.material.core)
 //dependencias mas nuevas de material 01/2025
         implementation (libs.androidx.material3.v110)
         implementation (libs.ui)
