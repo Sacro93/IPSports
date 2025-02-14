@@ -12,11 +12,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ipsports.R
-import com.example.ipsports.View.Event.Reusable.EventCreationProgressBar
+import com.example.ipsports.View.Event.ReusableEvent.EventCreationProgressBar
 import com.example.ipsports.View.Reusable.ButtonPrimary
-import com.example.ipsports.View.Event.Reusable.SportSelectionCard
+import com.example.ipsports.View.Event.ReusableEvent.SportSelectionCard
 import com.example.ipsports.ui.theme.IpSportsTheme
-import com.example.ipsports.ui.theme.White
 
 @Composable
 fun SportSelectionScreen(
@@ -38,13 +37,13 @@ fun SportSelectionScreen(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-
-
-                        Color(0xFF457B9D), // Azul profundo
-                        Color(0xFFA8DADC)  // Azul claro
+                        Color(0xFF337C8D), // Azul verdoso claro (parte superior)
+                        Color(0xFF15272D), // Azul grisáceo oscuro (zona media)
+                        Color(0xFF17272B)  // Casi negro (base)
                     )
                 )
-            ),
+            )
+        ,
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -53,7 +52,7 @@ fun SportSelectionScreen(
                 .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
 
-
+            Spacer(modifier = Modifier.height(16.dp))
             EventCreationProgressBar(currentPage = 2, totalPages = 4)
             Spacer(modifier = Modifier.height(24.dp))
             // Título
@@ -84,14 +83,24 @@ fun SportSelectionScreen(
             ButtonPrimary(
                 text = "Continuar",
                 onClick = onContinue,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .padding(horizontal = 16.dp)
+                    .align(Alignment.CenterHorizontally)
             )
+
+
             Spacer(modifier = Modifier.height(16.dp))
             ButtonPrimary(
                 text = "Cancelar",
                 onClick = onContinue,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .padding(horizontal = 16.dp)
+                    .align(Alignment.CenterHorizontally)
             )
+
+            
         }
     }
 

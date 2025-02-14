@@ -1,4 +1,4 @@
-package com.example.ipsports.View.Event.Reusable
+package com.example.ipsports.View.Event.ReusableEvent
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

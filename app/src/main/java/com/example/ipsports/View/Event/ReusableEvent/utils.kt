@@ -1,4 +1,4 @@
-package com.example.ipsports.View.Event.Reusable
+package com.example.ipsports.View.Event.ReusableEvent
 
 enum class FieldType {
     Text,  // Campo de texto normal

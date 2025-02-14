@@ -23,10 +23,10 @@ fun LoginEntryScreen() {
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-
-
-                        Color(0xFF457B9D), // Azul profundo
-                        Color(0xFFA8DADC)  // Azul claro
+                        Color(0xFF1E88E5),// Azul brillante (inicio)
+                        Color(0xFF1565C0), // Azul medio
+                        Color(0xFF0D47A1), // Azul más oscuro
+                        Color(0xFF000000)  // Negro (final)
                     )
                 )
             ),

@@ -3,6 +3,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -20,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.ipsports.View.Reusable.BottomNavigationBar
-import com.example.ipsports.ui.theme.IpSportsTheme
 
 @Composable
 fun ProfileScreen(
@@ -29,12 +29,11 @@ fun ProfileScreen(
     username: String,
     email: String,
     profileImage: String?,
-    onUpgradeClick: () -> Unit,
     onHelpClick: () -> Unit,
-    onAccountClick: () -> Unit,
-    onDocumentsClick: () -> Unit,
-    onLearnClick: () -> Unit,
-    onInboxClick: () -> Unit
+    onEditProfileClick: () -> Unit,
+    onTermsClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
+    onCloseAccountClick: () -> Unit
 ) {
     Scaffold(
         bottomBar = {
@@ -50,12 +49,14 @@ fun ProfileScreen(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF1E88E5), // Azul brillante (inicio)
+
                             Color(0xFF1565C0), // Azul medio
+                            Color(0xFF1565C0), // Azul elegante
+                            Color(0xFF1E293B), // Azul oscuro con gris
+                          //  Color(0xFF000000),  // Negro (final)
                             Color(0xFF000000)  // Negro (final)
-                        ),
-                        startY = 0.0f,
-                        endY = 2100f
+
+                        )
                     )
                 )
                 .padding(padding)
@@ -64,96 +65,100 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(200.dp))
 
-                // Imagen de perfil
-                if (profileImage != null) {
-                    AsyncImage(
-                        model = profileImage,
-                        contentDescription = "Imagen de perfil",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(CircleShape)
-                    )
-                } else {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary)
-                    ) {
+
+                Box(
+                    modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.1f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (profileImage != null) {
+                        AsyncImage(
+                            model = profileImage,
+                            contentDescription = "Imagen de perfil",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(CircleShape)
+                        )
+                    } else {
                         Text(
                             text = username.firstOrNull()?.toString()?.uppercase() ?: "",
                             style = MaterialTheme.typography.headlineLarge,
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = Color.White
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Nombre del usuario
+                // 🔹 Nombre y email estilizados
                 Text(
                     text = username,
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onPrimary
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    color = Color.White
                 )
 
-                // Email del usuario
                 Text(
                     text = email,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                    color = Color.White.copy(alpha = 0.7f)
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Botón Upgrade
-                Button(
-                    onClick = onUpgradeClick,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                ) {
-                    Text(text = "Upgrade")
-                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Opciones del perfil
-                ProfileOption(icon = Icons.Default.Help, label = "Help", onClick = onHelpClick)
-                ProfileOption(icon = Icons.Default.Person, label = "Account", onClick = onAccountClick)
-                ProfileOption(icon = Icons.Default.Description, label = "Documents & Statements", onClick = onDocumentsClick)
-                ProfileOption(icon = Icons.Default.Lightbulb, label = "Learn", onClick = onLearnClick)
-                ProfileOption(icon = Icons.Default.Email, label = "Inbox", onClick = onInboxClick)
+                // 🔹 Card con opciones de perfil
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF121212))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        ProfileOption(icon = Icons.Default.Help, label = "Ayuda", onClick = onHelpClick)
+                        ProfileOption(icon = Icons.Default.Person, label = "Editar Perfil", onClick = onEditProfileClick)
+                        ProfileOption(icon = Icons.Default.Article, label = "Términos y Condiciones", onClick = onTermsClick)
+                        ProfileOption(icon = Icons.Default.Notifications, label = "Notificaciones", onClick = onNotificationsClick)
+                        ProfileOption(icon = Icons.Default.Warning, label = "Cerrar Cuenta", onClick = onCloseAccountClick, isWarning = false)
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun ProfileOption(icon: ImageVector, label: String, onClick: () -> Unit) {
+fun ProfileOption(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    isWarning: Boolean = false
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(16.dp)
+            .padding(vertical = 12.dp)
     ) {
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = MaterialTheme.colorScheme.onPrimary,
+            tint = if (isWarning) Color.Red else Color.White,
             modifier = Modifier.size(24.dp)
         )
+
         Spacer(modifier = Modifier.width(16.dp))
+
         Text(
             text = label,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onPrimary
+            color = if (isWarning) Color.Red else Color.White
         )
     }
 }
@@ -161,20 +166,17 @@ fun ProfileOption(icon: ImageVector, label: String, onClick: () -> Unit) {
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 fun ProfileScreenPreview() {
-    IpSportsTheme {
-        ProfileScreen(
-            currentRoute = "profile",
-            onNavigate = { println("Navigate to $it") },
-            username = "Francisco Santiago",
-            email = "sacroisky93@example.com",
-            profileImage = null, // Cambia por una URL si tienes una imagen
-            onUpgradeClick = { println("Upgrade clicked") },
-            onHelpClick = { println("Help clicked") },
-            onAccountClick = { println("Account clicked") },
-            onDocumentsClick = { println("Documents clicked") },
-            onLearnClick = { println("Learn clicked") },
-            onInboxClick = { println("Inbox clicked") }
-        )
-    }
+    ProfileScreen(
+        currentRoute = "profile",
+        onNavigate = { println("Navigate to $it") },
+        username = "Francisco Santiago",
+        email = "sacroisky93@example.com",
+        profileImage = null,
+        onHelpClick = { println("Ayuda clickeada") },
+        onEditProfileClick = { println("Editar perfil clickeado") },
+        onTermsClick = { println("Términos y condiciones clickeados") },
+        onNotificationsClick = { println("Notificaciones clickeadas") },
+        onCloseAccountClick = { println("Cerrar cuenta clickeado") }
+    )
 }
 

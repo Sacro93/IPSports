@@ -1,4 +1,4 @@
-package com.example.ipsports.View.Event.Reusable
+package com.example.ipsports.View.Event.ReusableEvent
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +15,6 @@ import com.example.ipsports.ui.theme.IpSportsTheme
 import java.util.Calendar
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import androidx.compose.material3.Text
 
 
 @Composable

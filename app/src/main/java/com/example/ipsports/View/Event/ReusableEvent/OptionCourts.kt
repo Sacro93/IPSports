@@ -1,5 +1,6 @@
-package com.example.ipsports.View.Event.Reusable
+package com.example.ipsports.View.Event.ReusableEvent
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,7 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.ipsports.ui.theme.IpSportsTheme
 
 @Composable
 fun OptionCourts(
@@ -70,6 +74,27 @@ fun OptionCourts(
                     }
                 )
             }
+        }
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun OptionCourtsPreview() {
+    var selectedCourt by remember { mutableStateOf<String?>(null) }
+
+    IpSportsTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF17272B)) // Simula un fondo oscuro
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            OptionCourts(
+                selectedCourt = selectedCourt,
+                courts = listOf("Cancha 1", "Cancha 2", "Cancha 3", "Cancha 4"),
+                onCourtSelected = { selectedCourt = it }
+            )
         }
     }
 }

@@ -1,140 +1,225 @@
 package com.example.ipsports.View.HomeScreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.ipsports.R
-import com.example.ipsports.View.Reusable.BottomNavigationBar
-import com.example.ipsports.View.Reusable.FeatureCard
-import com.example.ipsports.View.Reusable.TopUserMenu
-import com.example.ipsports.ui.theme.IpSportsTheme
+import coil.compose.AsyncImage
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import com.example.ipsports.View.Reusable.ButtonPrimary
 
 @Composable
-fun HomeScreen(
-    currentRoute: String,
-    onNavigate: (String) -> Unit,
-    username: String,
-    onEditProfile: () -> Unit,
-    onStatsClick: () -> Unit,
-    onLogout: () -> Unit
+fun EditProfileScreen(
+    profileImage: String?,
+    onPhotoSelected: () -> Unit,
+    onTakePhoto: () -> Unit,
+    onSaveChanges: (String, String, String, String, String) -> Unit,
+    onBack: () -> Unit,
+    onSignOut: () -> Unit
 ) {
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(
-                currentRoute = currentRoute,
-                onNavigate = onNavigate
+    var showPhotoDialog by remember { mutableStateOf(false) }
+    var isEditing by remember { mutableStateOf(false) }
+
+    // Estados para cada campo editable
+    var nombre by remember { mutableStateOf("Francisco Santiago") }
+    var email by remember { mutableStateOf("sacroisky93@example.com") }
+    var phone by remember { mutableStateOf("+34 600 123 456") }
+    var password by remember { mutableStateOf("***********") }
+    var domicilio by remember { mutableStateOf("Barcelona, España") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF1E88E5), // Azul brillante (inicio)
+                        Color(0xFF1565C0), // Azul medio
+                        Color(0xFF000000)  // Negro (final)
+                    )
+                )
+            )
+    ) {
+        // **Flecha para volver atrás**
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Volver",
+                tint = Color.White,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable { onBack() }
             )
         }
-    ) { padding ->
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF1E88E5),// Azul brillante (inicio)
-                            Color(0xFF1565C0), // Azul medio
-                         //   Color(0xFF0D47A1), // Azul más oscuro
-                            Color(0xFF000000)  // Negro (final)
-                        ),
-                        startY = 0.0f,
-                       endY = 1000f
-                    )
-                )
+                .fillMaxWidth()
+                .height(180.dp),
+            contentAlignment = Alignment.Center
         ) {
-            // Overlay para suavizar el cambio
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFF1E88E5), // Azul brillante inicial
-//                                Color(0xFF64B5F6), // Azul claro en el medio
-                                Color(0xFF0D47A1), // Azul oscuro
-                                Color.Black         // Negro
-                            ),
-                            startY = 0f,
-                            endY = 1700f // Extender el rango del gradiente para suavidad
-                        )
-                    )
-            )
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(20.dp))
-                TopUserMenu(
-                    userInitials = "JD",
-                    userImage = null,
-                    onEditProfile = onEditProfile,
-                    onStatsClick = onStatsClick,
-                    onLogout = onLogout
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Column(
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                // 🔹 **Imagen de Perfil**
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .size(110.dp)
+                        .clip(CircleShape)
+                        .background(Color.Gray)
+                        .clickable { showPhotoDialog = true }, // 🔹 Ahora la imagen es clickeable
+                    contentAlignment = Alignment.Center
                 ) {
-                    FeatureCard(
-                        imageRes = R.drawable.brc,
-                        title = "Create Your Own Event",
-                        onClick = { /* Acción de ejemplo */ }
-                    )
-                    FeatureCard(
-                        imageRes = R.drawable.grupo,
-                        title = "Find Your Sport Match",
-                        onClick = { /* Acción de ejemplo */ }
-                    )
-                    EventCard(
-                        sport = "Padel",
-                        date = "27 de Enero, 2025",
-                        location = "Club Deportivo Las Palmas",
-                        participants = listOf("Ana", "Luis", "María", "Juan"),
-                        maxParticipants = 8,
-                        modifier = Modifier.padding(16.dp)
-                    )
+                    if (profileImage != null) {
+                        AsyncImage(
+                            model = profileImage,
+                            contentDescription = "Imagen de perfil",
+                            modifier = Modifier
+                                .size(110.dp)
+                                .clip(CircleShape)
+                        )
+                    }
                 }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // 📌 **Texto para cambiar foto**
+                Text(
+                    text = "Cambiar Foto",
+                    color = Color.White.copy(alpha = 0.8f), // 🔹 Texto sutilmente más tenue
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.clickable { showPhotoDialog = true } // 🔹 Clickeable para abrir diálogo
+                )
             }
         }
+
+
+        // **Campos editables**
+        Column(modifier = Modifier.padding(16.dp)) {
+            ProfileEditableField("Nombre", nombre, isEditing) { nombre = it }
+            ProfileEditableField("Email", email, isEditing) { email = it }
+            ProfileEditableField("Número Móvil", phone, isEditing) { phone = it }
+            ProfileEditableField("Domicilio", domicilio, isEditing) { domicilio = it }
+            ProfileEditableField("Contraseña", password, isEditing, isPassword = true) {
+                password = it
+            }
+        }
+
+
+    }
+
+    // **Diálogo para elegir foto**
+    if (showPhotoDialog) {
+        AlertDialog(
+            onDismissRequest = { showPhotoDialog = false },
+            title = { Text("Seleccionar Foto") },
+            text = { Text("Elige cómo deseas añadir tu foto de perfil") },
+            confirmButton = {
+                Column {
+                    ButtonPrimary(
+                        text = "Tomar Foto",
+                        onClick = {
+                            showPhotoDialog = false
+                            onTakePhoto()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    ButtonPrimary(
+                        text = "Seleccionar de Galería",
+                        onClick = {
+                            showPhotoDialog = false
+                            onPhotoSelected()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            dismissButton = {
+                ButtonPrimary(
+                    text = "Cancelar",
+                    onClick = { showPhotoDialog = false },
+                    isOutlined = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        )
     }
 }
 
+// **Componente para cada campo editable**
+@Composable
+fun ProfileEditableField(
+    label: String,
+    value: String,
+    isEditing: Boolean,
+    isPassword: Boolean = false,
+    onValueChange: (String) -> Unit
+) {
+    var text by remember { mutableStateOf(value) }
+
+    OutlinedTextField(
+        value = text,
+        onValueChange = { text = it; onValueChange(it) },
+        label = { Text(label, color = Color.Gray) },
+        trailingIcon = {
+            if (isEditing) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Editar",
+                    tint = Color.Gray,
+                    modifier = Modifier.clickable { /* Agregar lógica si es necesario */ }
+                )
+            }
+        },
+        readOnly = !isEditing,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
+        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
+            cursorColor = Color.White,
+            focusedIndicatorColor = Color.White,
+            unfocusedIndicatorColor = Color.White.copy(alpha = 0.5f)
+        )
+    )
+}
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
-    IpSportsTheme {
-        HomeScreen(
-            currentRoute = "home",
-            onNavigate = { println("Navegar a $it") },
-            username = "Francisco",
-            onEditProfile = { println("Editar perfil") },
-            onStatsClick = { println("Ir a estadísticas") },
-            onLogout = { println("Cerrar sesión") }
-        )
-    }
+fun EditProfileScreenPreview() {
+    EditProfileScreen(
+        profileImage = null,
+        onPhotoSelected = { println("Seleccionar foto de galería") },
+        onTakePhoto = { println("Abrir cámara") },
+        onSaveChanges = { nombre, email, phone, domicilio, password ->
+            println("Guardado: $nombre, $email, $phone, $domicilio, $password")
+        },
+        onBack = { println("Volver") },
+        onSignOut = { println("Cerrar sesión") }
+    )
 }

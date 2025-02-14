@@ -1,5 +1,6 @@
 package com.example.ipsports.View.Event.pg2
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
@@ -12,13 +13,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ipsports.View.Event.Reusable.EventCreationProgressBar
-import com.example.ipsports.View.Event.Reusable.EventInputField
-import com.example.ipsports.View.Event.Reusable.FieldType
-import com.example.ipsports.View.Event.Reusable.OptionCourts
+import com.example.ipsports.View.Event.ReusableEvent.EventCreationProgressBar
+import com.example.ipsports.View.Event.ReusableEvent.EventInputField
+import com.example.ipsports.View.Event.ReusableEvent.FieldType
+import com.example.ipsports.View.Event.ReusableEvent.OptionCourts
 import com.example.ipsports.View.Reusable.ButtonPrimary
 import com.example.ipsports.ui.theme.IpSportsTheme
 
@@ -37,14 +41,33 @@ fun EventInfoScreen(
     var rentCourt by remember { mutableStateOf(false) }
     var selectedCourt by remember { mutableStateOf<String?>(null) } // Estado de la cancha seleccionada
     val courts = listOf("Cancha 1", "Cancha 2", "Cancha 3") // Ejemplo de canchas disponibles
+    var showDialog by remember { mutableStateOf(false) } // Estado para mostrar el pop-up
+    var showWarning by remember { mutableStateOf(false) } // Estado para mostrar advertencia
 
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF337C8D), // Azul verdoso claro (parte superior)
+                        Color(0xFF15272D), // Azul grisáceo oscuro (zona media)
+                        Color(0xFF17272B)  // Casi negro (base)
+                    )
+                )
+            )
+        ,
+        contentAlignment = Alignment.Center
+    ){
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-
-    ) {
+    ){
+        Spacer(modifier = Modifier.height(16.dp))
         EventCreationProgressBar(currentPage = 2, totalPages = 4)
         Spacer(modifier = Modifier.height(25
             .dp))
@@ -108,25 +131,83 @@ fun EventInfoScreen(
             courts = courts,
             onCourtSelected = { selectedCourt = it }
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         ButtonPrimary(
             text = "Agregar Amigos",
             onClick = { /* Lógica para abrir pantalla de selección de amigos */ },
-            modifier = Modifier.fillMaxWidth()
-        )
+            modifier = Modifier
+                .wrapContentWidth()
+                .padding(horizontal = 16.dp)
+                .align(Alignment.CenterHorizontally)
 
+        )
 
         Spacer(modifier = Modifier.weight(1f))
 
         // Botón Continuar
         ButtonPrimary(
-            text = "Continuar",
+            text = "Confirmar",
             onClick = onContinue,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .wrapContentWidth()
+                .padding(horizontal = 16.dp)
+                .align(Alignment.CenterHorizontally)
         )
+
+
+
+        // 📌 Diálogo de Confirmación
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Confirmar Evento") },
+                text = { Text("¿Estás seguro de que quieres confirmar este evento?") },
+                confirmButton = {
+                    ButtonPrimary(
+                        text = "Sí, Confirmar",
+                        onClick = {
+
+                            showDialog = false
+                        }
+                    )
+                },
+                dismissButton = {
+                    ButtonPrimary(
+                        text = "Cancelar",
+                        onClick = { showDialog = false },
+                        isOutlined = true
+                    )
+                }
+            )
+        }
+
+        // 📌 Mensaje de Advertencia (Si no hay amigos)
+        if (showWarning) {
+            AlertDialog(
+                onDismissRequest = { showWarning = false },
+                title = { Text("Agregar Amigos") },
+                text = { Text("No has agregado amigos al evento. ¿Quieres agregarlos ahora?") },
+                confirmButton = {
+                    ButtonPrimary(
+                        text = "Sí, Agregar Amigos",
+                        onClick = {
+                            //onAddFriends() // Redirigir al usuario a la pantalla de agregar amigos
+                            showWarning = false
+                        }
+                    )
+                },
+                dismissButton = {
+                    ButtonPrimary(
+                        text = "Omitir",
+                        onClick = { showWarning = false },
+                        isOutlined = true
+                    )
+                }
+            )
+        }
     }
 }
-
+}
 @Preview(showBackground = true)
 @Composable
 fun EventInfoScreenPreview() {
