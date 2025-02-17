@@ -15,31 +15,46 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.ipsports.R
 
 
-@Preview
 @Composable
 fun LogoScreen() {
-    // Escala animada para el logo
+    // 🔄 Animación de Lottie
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.animation1) // Ruta del JSON en res/raw/
+    )
+    val progress by animateLottieCompositionAsState(
+        composition, iterations = LottieConstants.IterateForever
+    )
+
+    // 🔹 Animación de escala
     val scaleAnim = rememberInfiniteTransition()
     val scale by scaleAnim.animateFloat(
-        initialValue = 0.5f,
-        targetValue = 1.0f,
+        initialValue = 0.8f, targetValue = 1.1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
+            animation = tween(1000, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         )
     )
 
-    // Animación de opacidad para el texto
+    // 🔹 Animación de opacidad
     val alphaAnim = rememberInfiniteTransition()
     val alpha by alphaAnim.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 1f,
+        initialValue = 0.3f, targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1500, easing = LinearEasing),
+            animation = tween(1500, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         )
     )
@@ -50,10 +65,9 @@ fun LogoScreen() {
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF1E88E5),// Azul brillante (inicio)
+                        Color(0xFF1E88E5), // Azul brillante
                         Color(0xFF1565C0), // Azul medio
-                        Color(0xFF0D47A1), // Azul más oscuro
-                     //  Color(0xFF000000)  // Negro (final)
+                        Color(0xFF0D47A1)  // Azul oscuro
                     )
                 )
             ),
@@ -63,18 +77,33 @@ fun LogoScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Animación de escala para el logo
-            Box(
-                modifier = Modifier
-                    .size(120.dp)
-                    .scale(scale)
-                    .background(MaterialTheme.colorScheme.primary, CircleShape)
+            // **Lottie Animation**
+            LottieAnimation(
+                composition = composition,
+                progress = { progress },
+                modifier = Modifier.size(150.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
+            // **Logo Estático en Círculo**
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .scale(scale)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                val logo: Painter = painterResource(id = R.drawable.logo_1)
+                Image(painter = logo, contentDescription = stringResource(id = R.string.app_name))
+            }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LogoScreenPreview() {
+    LogoScreen()
 }
 

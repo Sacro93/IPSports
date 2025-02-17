@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.ipsports.ui.theme.IpSportsTheme
+import com.example.ipsports.View.theme.Color.IpSportsTheme
 import java.util.Calendar
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog

@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.ipsports.View.Reusable.BottomNavigationBar
-
 @Composable
 fun ProfileScreen(
     currentRoute: String,
@@ -35,11 +34,19 @@ fun ProfileScreen(
     onNotificationsClick: () -> Unit,
     onCloseAccountClick: () -> Unit
 ) {
+    val userInitials = username.split(" ")
+        .mapNotNull { it.firstOrNull()?.toString()?.uppercase() }
+        .take(2)
+        .joinToString("")
+
     Scaffold(
         bottomBar = {
             BottomNavigationBar(
                 currentRoute = currentRoute,
-                onNavigate = onNavigate
+                onNavigate = onNavigate,
+                userImage = profileImage,
+                userInitials = userInitials,
+                onProfileClick = onEditProfileClick
             )
         }
     ) { padding ->
@@ -49,13 +56,10 @@ fun ProfileScreen(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-
                             Color(0xFF1565C0), // Azul medio
                             Color(0xFF1565C0), // Azul elegante
                             Color(0xFF1E293B), // Azul oscuro con gris
-                          //  Color(0xFF000000),  // Negro (final)
                             Color(0xFF000000)  // Negro (final)
-
                         )
                     )
                 )
@@ -65,9 +69,9 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(200.dp))
+                Spacer(modifier = Modifier.height(100.dp)) // 🔹 Ajuste en el espaciado
 
-
+                // 🔹 Imagen de perfil o iniciales
                 Box(
                     modifier = Modifier
                         .size(120.dp)
@@ -86,14 +90,14 @@ fun ProfileScreen(
                         )
                     } else {
                         Text(
-                            text = username.firstOrNull()?.toString()?.uppercase() ?: "",
+                            text = userInitials,
                             style = MaterialTheme.typography.headlineLarge,
                             color = Color.White
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // 🔹 Nombre y email estilizados
                 Text(
@@ -108,12 +112,12 @@ fun ProfileScreen(
                     color = Color.White.copy(alpha = 0.7f)
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 // 🔹 Card con opciones de perfil
                 Card(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(0.9f) // 🔹 Más compacto y centrado
                         .padding(horizontal = 16.dp),
                     shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(8.dp),
@@ -124,7 +128,7 @@ fun ProfileScreen(
                         ProfileOption(icon = Icons.Default.Person, label = "Editar Perfil", onClick = onEditProfileClick)
                         ProfileOption(icon = Icons.Default.Article, label = "Términos y Condiciones", onClick = onTermsClick)
                         ProfileOption(icon = Icons.Default.Notifications, label = "Notificaciones", onClick = onNotificationsClick)
-                        ProfileOption(icon = Icons.Default.Warning, label = "Cerrar Cuenta", onClick = onCloseAccountClick, isWarning = false)
+                        ProfileOption(icon = Icons.Default.Warning, label = "Cerrar Cuenta", onClick = onCloseAccountClick, isWarning = true)
                     }
                 }
             }
@@ -144,7 +148,7 @@ fun ProfileOption(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 12.dp)
+            .padding(vertical = 14.dp) // 🔹 Más separación entre cada opción
     ) {
         Icon(
             imageVector = icon,
@@ -179,4 +183,3 @@ fun ProfileScreenPreview() {
         onCloseAccountClick = { println("Cerrar cuenta clickeado") }
     )
 }
-

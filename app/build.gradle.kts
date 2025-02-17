@@ -71,8 +71,10 @@ dependencies {
         implementation (libs.androidx.runtime)
         implementation (libs.androidx.ui.text)
 
+//animation
 
-
+    implementation(libs.lottie.compose)
+    implementation(libs.androidx.ui.text.google.fonts)
     // Debugging
     debugImplementation(libs.androidx.ui.tooling)
     implementation(libs.material)

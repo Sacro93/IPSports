@@ -1,96 +1,174 @@
 package com.example.ipsports.View.Profile
 
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.ipsports.View.Reusable.ButtonPrimary
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.ipsports.View.Reusable.ReusableInputField
 
 @Composable
 fun EditProfileScreen(
-    profileImage: String?,
+    profileImage: String?, // Imagen de perfil (futuro: desde BD)
+    userData: UserData, // Datos del usuario obtenidos desde la BD
     onPhotoSelected: () -> Unit,
     onTakePhoto: () -> Unit,
-    onSaveChanges: () -> Unit,
-    onSignOut: () -> Unit
+    onSaveChanges: (String, String, String, String, String, String) -> Unit,
+    onBack: () -> Unit
 ) {
     var showPhotoDialog by remember { mutableStateOf(false) }
 
-    var nombre by remember { mutableStateOf("Aliza Khan") }
-    var email by remember { mutableStateOf("alizakhan@gmail.com") }
-    var phone by remember { mutableStateOf("+9230245963210") }
-    var password by remember { mutableStateOf("***********") }
+    // Estados controlados (futuro: reemplazados por ViewModel)
+    var nombre by remember { mutableStateOf(userData.nombre) }
+    var apellido by remember { mutableStateOf(userData.apellido) }
+    var email by remember { mutableStateOf(userData.email) }
+    var phone by remember { mutableStateOf(userData.phone) }
+    var password by remember { mutableStateOf(userData.password) }
+    var domicilio by remember { mutableStateOf(userData.domicilio) }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF1E88E5), // Azul brillante
+                        Color(0xFF1565C0), // Azul medio
+                        Color(0xFF000000)  // Negro
+                    )
+                )
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // **Encabezado con imagen de perfil**
-        Box(
+        // 🔹 **Flecha para volver**
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp)
-                .background(Color(0xFFA8DADC)), // Color similar al de la imagen
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Volver",
+                tint = Color.White,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable { onBack() }
+            )
+        }
+
+        // 🔹 **Imagen de perfil**
+        Box(
+            modifier = Modifier
+                .size(110.dp)
+                .clip(CircleShape)
+                .background(Color.Gray)
+                .clickable { showPhotoDialog = true },
             contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(Color.Gray)
-                    .clickable { showPhotoDialog = true },
-                contentAlignment = Alignment.Center
-            ) {
-                if (profileImage != null) {
-                    AsyncImage(
-                        model = profileImage,
-                        contentDescription = "Imagen de perfil",
-                        modifier = Modifier.clip(CircleShape)
-                    )
-                }
-                Icon(
-                    imageVector = Icons.Default.CameraAlt,
-                    contentDescription = "Editar foto",
-                    tint = Color.White,
+            if (profileImage != null) {
+                AsyncImage(
+                    model = profileImage,
+                    contentDescription = "Imagen de perfil",
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .size(24.dp)
-                        .background(Color.Black.copy(alpha = 0.7f), shape = CircleShape)
-                        .padding(4.dp)
+                        .size(110.dp)
+                        .clip(CircleShape)
                 )
             }
         }
 
-        // **Campos editables**
-        Column(modifier = Modifier.padding(16.dp)) {
-            ProfileEditableField("Nombre", nombre) { nombre = it }
-            ProfileEditableField("Email", email) { email = it }
-            ProfileEditableField("Número Móvil", phone) { phone = it }
-            ProfileEditableField("Contraseña", password, isPassword = true) { password = it }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Cambiar Foto",
+            color = Color.White.copy(alpha = 0.8f),
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.clickable { showPhotoDialog = true }
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // 📌 **Formulario dentro de una tarjeta**
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.Black.copy(alpha = 0.3f))
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                ReusableInputField(
+                    value = nombre,
+                    onValueChange = { nombre = it },
+                    label = "Nombre",
+                    leadingIcon = Icons.Default.Person
+                )
+                ReusableInputField(
+                    value = apellido,
+                    onValueChange = { apellido = it },
+                    label = "Apellido",
+                    leadingIcon = Icons.Default.Person
+                )
+                ReusableInputField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = "Email",
+                    leadingIcon = Icons.Default.Email
+                )
+                ReusableInputField(
+                    value = phone,
+                    onValueChange = { phone = it },
+                    label = "Número Móvil",
+                    leadingIcon = Icons.Default.Phone
+                )
+                ReusableInputField(
+                    value = domicilio,
+                    onValueChange = { domicilio = it },
+                    label = "Domicilio",
+                    leadingIcon = Icons.Default.LocationOn
+                )
+                ReusableInputField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = "Contraseña",
+                    isPassword = true,
+                    leadingIcon = Icons.Default.Lock
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // **Botón de Cerrar Sesión**
+        // 📌 **Botón Guardar Cambios**
         ButtonPrimary(
-            text = "Cerrar Sesión",
-            onClick = onSignOut,
+            text = "Guardar Cambios",
+            onClick = { onSaveChanges(nombre, apellido, email, phone, domicilio, password) },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp)
+                .align(Alignment.CenterHorizontally)
+                .width(250.dp)
         )
     }
 
@@ -133,46 +211,36 @@ fun EditProfileScreen(
     }
 }
 
-// **Componente para cada campo editable**
-@Composable
-fun ProfileEditableField(label: String, value: String, isPassword: Boolean = false, onValueChange: (String) -> Unit) {
-    var text by remember { mutableStateOf(value) }
+// **📌 Modelo de datos para recibir desde BD**
+data class UserData(
+    val nombre: String,
+    val apellido: String,
+    val email: String,
+    val phone: String,
+    val domicilio: String,
+    val password: String
+)
 
-    OutlinedTextField(
-        value = text,
-        onValueChange = { text = it; onValueChange(it) },
-        label = { Text(label, color = Color.Gray) },
-        trailingIcon = {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = "Editar",
-                tint = Color.Gray,
-                modifier = Modifier.clickable { /* Agregar lógica si es necesario */ }
-            )
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color.Black),
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-        colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = Color.White,
-            focusedContainerColor = Color.White,
-            cursorColor = Color.Black,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        )
-    )
-}
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 fun EditProfileScreenPreview() {
     EditProfileScreen(
-        profileImage = null,
+        profileImage = null, // Puedes cambiar esto para probar con una URL de imagen
+        userData = UserData(
+            nombre = "Francisco",
+            apellido = "Santiago",
+            email = "sacroisky93@example.com",
+            phone = "+34 600 123 456",
+            domicilio = "Barcelona, España",
+            password = "***********"
+        ),
         onPhotoSelected = { println("Seleccionar foto de galería") },
         onTakePhoto = { println("Abrir cámara") },
-        onSaveChanges = { println("Cambios guardados") },
-        onSignOut = { println("Cerrar sesión") }
+        onSaveChanges = { nombre, apellido, email, phone, domicilio, password ->
+            println("Guardado: $nombre, $apellido, $email, $phone, $domicilio, $password")
+        },
+        onBack = { println("Volver") }
     )
 }
+
