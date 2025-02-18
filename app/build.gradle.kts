@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     kotlin("plugin.serialization") version "1.9.10"
+    id("com.google.gms.google-services")
 
 }
 
@@ -41,11 +42,15 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "2.0.0" // Alineado con Kotlin 2.0
+
     }
 }
 
 dependencies {
 
+    //firebase
+    implementation(libs.firebase.bom)
+    implementation(libs.firebase.analytics)
 
 // Navegación en Compose
 
@@ -75,6 +80,9 @@ dependencies {
 
     implementation(libs.lottie.compose)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.androidx.runtime.livedata)
     // Debugging
     debugImplementation(libs.androidx.ui.tooling)
     implementation(libs.material)

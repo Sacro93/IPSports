@@ -7,7 +7,9 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -19,18 +21,39 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ipsports.Model.Usecase.LoginUseCase
+import com.example.ipsports.Model.Usecase.RegisterUseCase
 import com.example.ipsports.View.Reusable.ButtonPrimary
 import com.example.ipsports.View.Reusable.ReusableInputField
 import com.example.ipsports.View.theme.Color.IpSportsTheme
 import com.example.ipsports.View.theme.Font.QuickSportsTitleGradient
+import com.example.ipsports.ViewModel.AuthViewModel
 
 @Composable
 fun LoginScreen(
-    onLogin: (String, String) -> Unit = { _, _ -> },
+    authViewModel: AuthViewModel,  // 🔹 ViewModel para manejar autenticación
+    onNavigateToHome: () -> Unit, //Acción cuando el login es exitoso
     onRegisterClick: () -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var errorMessages by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+
+    val authResult by authViewModel.authResult.observeAsState()
+
+    LaunchedEffect(authResult) {
+        authResult?.getOrNull()?.let {
+            onNavigateToHome()
+        } ?: run {
+            authResult?.exceptionOrNull()?.message?.let { error ->
+                errorMessages = when {
+                    "correo" in error.lowercase() -> errorMessages + ("email" to error)
+                    "contraseña" in error.lowercase() -> errorMessages + ("password" to error)
+                    else -> errorMessages + ("general" to error)
+                }
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -83,6 +106,13 @@ fun LoginScreen(
                     placeholder = "Escribe tu correo...",
                     leadingIcon = Icons.Default.Email
                 )
+                if (errorMessages.containsKey("email")) {
+                    Text(
+                        text = errorMessages["email"] ?: "",
+                        color = Color.Red,
+                        fontSize = 12.sp
+                    )
+                }
 
                 ReusableInputField(
                     value = password,
@@ -92,19 +122,32 @@ fun LoginScreen(
                     leadingIcon = Icons.Default.Lock,
                     isPassword = true
                 )
+                if (errorMessages.containsKey("password")) {
+                    Text(
+                        text = errorMessages["password"] ?: "",
+                        color = Color.Red,
+                        fontSize = 12.sp
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
 
-                ButtonPrimary(
-                    text = "Iniciar Sesión",
-                    onClick = { onLogin(email, password) },
-                    modifier = Modifier
-                        .width(280.dp)
-                        .height(50.dp)
-                        .align(Alignment.CenterHorizontally)
-
-                )
+                if (authResult is Result.Loading) {
+                    CircularProgressIndicator(color = Color.White)
+                } else {
+                    ButtonPrimary(
+                        text = "Iniciar Sesión",
+                        onClick = {
+                            errorMessages = emptyMap() // Reinicia errores
+                            authViewModel.loginUser(email, password)
+                        },
+                        modifier = Modifier
+                            .width(280.dp)
+                            .height(50.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(50.dp))
 
@@ -120,13 +163,20 @@ fun LoginScreen(
         }
     }
 }
-    @Preview(showBackground = true)
-    @Composable
-    fun LoginScreenPreview() {
-        IpSportsTheme {
-            LoginScreen(
-                onLogin = { email, password -> println("Iniciar sesión con: $email - $password") },
-                onRegisterClick = { println("Ir a pantalla de registro") }
-            )
-        }
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    val fakeViewModel = AuthViewModel(
+        RegisterUseCase(),
+        LoginUseCase()
+    )
+
+    IpSportsTheme {
+        LoginScreen(
+            authViewModel = fakeViewModel,
+            onNavigateToHome = { println("Ir al Home") },
+            onRegisterClick = { println("Ir a pantalla de registro") }
+        )
     }
+}
