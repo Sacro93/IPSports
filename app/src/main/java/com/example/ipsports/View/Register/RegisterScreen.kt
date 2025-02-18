@@ -16,17 +16,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ipsports.Model.Firebase.AuthResult
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.ipsports.Model.Auth.AuthResult
 import com.example.ipsports.View.Reusable.ButtonPrimary
 import com.example.ipsports.View.Reusable.ReusableInputField
 import com.example.ipsports.View.theme.Font.QS
-import com.example.ipsports.ViewModel.AuthViewModel
-
+import com.example.ipsports.ViewModel.Auth.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
-    authViewModel: AuthViewModel,
+    authViewModel: AuthViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
@@ -36,26 +36,57 @@ fun RegisterScreen(
     var confirmPassword by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
 
+    var showEmailSentDialog by remember { mutableStateOf(false) }
+    var showVerificationDialog by remember { mutableStateOf(false) }
+
     //  Mapa para manejar los errores por campo
     var errorMessages by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
 
-    //  Observar cambios en la autenticación
+    // 🔹 Observar cambios en la autenticación y verificación de email
     val authResult by authViewModel.authResult.observeAsState()
+    val emailVerificationResult by authViewModel.emailVerificationResult.observeAsState()
 
+    // 🔹 Cuando el usuario se registra con éxito, enviamos el email de verificación
     LaunchedEffect(authResult) {
-        when (authResult) {
-            is AuthResult.Failure -> {
-                val error = (authResult as AuthResult.Failure).exception.message ?: "Ocurrió un error inesperado"
-                errorMessages = when {
-                    "correo" in error.lowercase() -> errorMessages + ("email" to error)
-                    "contraseña" in error.lowercase() -> errorMessages + ("password" to error)
-                    "coinciden" in error.lowercase() -> errorMessages + ("confirmPassword" to error)
-                    "obligatorio" in error.lowercase() -> errorMessages + ("general" to error)
-                    else -> errorMessages + ("general" to error)
+        if (authResult is AuthResult.Success) {
+            authViewModel.sendVerificationEmail() // ✅ Enviar email al registrarse
+            showEmailSentDialog = true
+        }
+    }
+
+    // 🔹 Cuando el email de verificación es enviado, mostrar el diálogo
+    LaunchedEffect(emailVerificationResult) {
+        if (emailVerificationResult?.first == true) {
+            showVerificationDialog = true
+        }
+    }
+
+    // 🔹 Dialogo para mostrar cuando se envía la verificación de email
+    if (showEmailSentDialog) {
+        AlertDialog(
+            onDismissRequest = { showEmailSentDialog = false },
+            title = { Text("Verificación enviada") },
+            text = { Text("Se ha enviado un correo de verificación. Revísalo antes de iniciar sesión.") },
+            confirmButton = {
+                Button(onClick = { showEmailSentDialog = false }) {
+                    Text("Aceptar")
                 }
             }
-            else -> Unit // Si es Loading o Success, no actualizamos errores
-        }
+        )
+    }
+
+    // 🔹 Dialogo para reenviar email de verificación si es necesario
+    if (showVerificationDialog) {
+        AlertDialog(
+            onDismissRequest = { showVerificationDialog = false },
+            confirmButton = {
+                Button(onClick = { showVerificationDialog = false }) {
+                    Text("OK")
+                }
+            },
+            title = { Text("Verificación de Correo") },
+            text = { Text("Te hemos enviado un correo de verificación. Revisa tu bandeja de entrada antes de iniciar sesión.") }
+        )
     }
 
     Scaffold(
@@ -109,7 +140,7 @@ fun RegisterScreen(
                             value = name,
                             onValueChange = {
                                 name = it
-                                errorMessages = errorMessages - "name" // Borra el error si cambia el input
+                                errorMessages = errorMessages - "name"
                             },
                             leadingIcon = Icons.Default.Person
                         )
@@ -208,6 +239,3 @@ fun RegisterScreen(
         }
     }
 }
-
-
-

@@ -12,49 +12,39 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
+import androidx.navigation.NavController
+import com.example.ipsports.Model.RoutesNavigation.Routes
 import com.example.ipsports.R
-
+import com.example.ipsports.View.theme.Font.QS
+import kotlinx.coroutines.delay
 
 @Composable
-fun LogoScreen() {
-    // 🔄 Animación de Lottie
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.animation1) // Ruta del JSON en res/raw/
-    )
-    val progress by animateLottieCompositionAsState(
-        composition, iterations = LottieConstants.IterateForever
-    )
+fun LogoScreen(navController: NavController) {
+    LaunchedEffect(Unit) {
+        delay(3000) // Esperar 3 segundos
+        navController.navigate(Routes.LOGIN_ENTRY) {
+            popUpTo(Routes.SPLASH) { inclusive = true }
+        }
+    }
 
-    // 🔹 Animación de escala
-    val scaleAnim = rememberInfiniteTransition()
-    val scale by scaleAnim.animateFloat(
+    val infiniteTransition = rememberInfiniteTransition()
+
+    // 🔹 Animación de escala (efecto de rebote)
+    val scale by infiniteTransition.animateFloat(
         initialValue = 0.8f, targetValue = 1.1f,
         animationSpec = infiniteRepeatable(
             animation = tween(1000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-
-    // 🔹 Animación de opacidad
-    val alphaAnim = rememberInfiniteTransition()
-    val alpha by alphaAnim.animateFloat(
-        initialValue = 0.3f, targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         )
     )
@@ -65,45 +55,26 @@ fun LogoScreen() {
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
+
                         Color(0xFF1E88E5), // Azul brillante
                         Color(0xFF1565C0), // Azul medio
-                        Color(0xFF0D47A1)  // Azul oscuro
+                        Color(0xFF0D47A1) , // Azul oscuro
+                                Color(0xFF000000)  // Negro (final)
                     )
                 )
             ),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Box(
+            modifier = Modifier
+                .size(300.dp)
+                .scale(scale),
+
+            contentAlignment = Alignment.Center
         ) {
-            // **Lottie Animation**
-            LottieAnimation(
-                composition = composition,
-                progress = { progress },
-                modifier = Modifier.size(150.dp)
+            QS(
+
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // **Logo Estático en Círculo**
-            Box(
-                modifier = Modifier
-                    .size(120.dp)
-                    .scale(scale)
-                    .background(MaterialTheme.colorScheme.primary, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                val logo: Painter = painterResource(id = R.drawable.logo_1)
-                Image(painter = logo, contentDescription = stringResource(id = R.string.app_name))
-            }
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun LogoScreenPreview() {
-    LogoScreen()
-}
-

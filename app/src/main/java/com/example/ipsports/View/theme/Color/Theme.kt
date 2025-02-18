@@ -6,32 +6,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.Typography
-/*
-// Paleta de colores única
-private val AppColorScheme = darkColorScheme(
-    primary = Color(0xFF00A8CC),    // Azul brillante
-    onPrimary = Color.White,        // Texto blanco sobre azul
-    background = Color(0xFF1A1A2E), // Fondo oscuro principal (azul muy oscuro)
-    surface = Color(0xFF16213E),    // Fondo de tarjetas (azul oscuro)
-    onSurface = Color(0xFF90A4AE),  // Texto en superficies (gris claro)
-    error = Color(0xFFF44336),      // Rojo para errores
-    onError = Color.White,          // Texto blanco sobre rojo
-    // Colores adicionales
-)
-
-
-
-// Aplicación del tema
-@Composable
-fun IpSportsTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = AppColorScheme, // Esquema único
-        typography = Typography,      // Tipografía
-        content = content             // Contenido envuelto en el tema
-    )
-}
-*/
-
 
 
 // Colores personalizados inspirados en la estética de las imágenes

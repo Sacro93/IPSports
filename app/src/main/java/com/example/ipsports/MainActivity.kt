@@ -1,27 +1,31 @@
 package com.example.ipsports
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import com.example.ipsports.View.Reusable.ButtonPrimary
+import androidx.core.view.WindowCompat
+import androidx.navigation.compose.rememberNavController
+import com.example.ipsports.View.Navigation.Navigation
 import com.example.ipsports.View.theme.Color.IpSportsTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // Ocultar la barra de estado
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
+
         setContent {
             IpSportsTheme {
-
-                ButtonPrimary(
-                    text = "Iniciar Sesión",
-                    onClick = {}
-                )
-
-                }
+                val navController = rememberNavController()
+                Navigation(navController = navController)
             }
         }
     }
+}
 
 

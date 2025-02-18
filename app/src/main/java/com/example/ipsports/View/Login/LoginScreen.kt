@@ -18,41 +18,71 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ipsports.Model.Usecase.LoginUseCase
-import com.example.ipsports.Model.Usecase.RegisterUseCase
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.ipsports.Model.Auth.AuthResult
 import com.example.ipsports.View.Reusable.ButtonPrimary
 import com.example.ipsports.View.Reusable.ReusableInputField
-import com.example.ipsports.View.theme.Color.IpSportsTheme
 import com.example.ipsports.View.theme.Font.QuickSportsTitleGradient
-import com.example.ipsports.ViewModel.AuthViewModel
+import com.example.ipsports.ViewModel.Auth.AuthViewModel
 
 @Composable
 fun LoginScreen(
-    authViewModel: AuthViewModel,  // 🔹 ViewModel para manejar autenticación
+    authViewModel: AuthViewModel = hiltViewModel(),  // 🔹 ViewModel para manejar autenticación
     onNavigateToHome: () -> Unit, //Acción cuando el login es exitoso
     onRegisterClick: () -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessages by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+    var showVerificationDialog by remember { mutableStateOf(false) }
 
     val authResult by authViewModel.authResult.observeAsState()
 
     LaunchedEffect(authResult) {
-        authResult?.getOrNull()?.let {
-            onNavigateToHome()
-        } ?: run {
-            authResult?.exceptionOrNull()?.message?.let { error ->
+        when (authResult) {
+            is AuthResult.Failure -> {
+                val error = (authResult as AuthResult.Failure).exception.message ?: "Ocurrió un error inesperado"
+
                 errorMessages = when {
                     "correo" in error.lowercase() -> errorMessages + ("email" to error)
                     "contraseña" in error.lowercase() -> errorMessages + ("password" to error)
+                    "verificar" in error.lowercase() -> {
+                        showVerificationDialog = true // ✅ Mostrar diálogo si es un problema de verificación
+                        errorMessages + ("general" to error)
+                    }
                     else -> errorMessages + ("general" to error)
                 }
             }
+
+            is AuthResult.Success -> {
+                onNavigateToHome() // ✅ Redirigir si el login es exitoso
+            }
+
+            else -> Unit
         }
+    }
+
+    if (showVerificationDialog) {
+        AlertDialog(
+            onDismissRequest = { showVerificationDialog = false },
+            title = { Text("Correo no verificado") },
+            text = { Text("Debes verificar tu correo antes de iniciar sesión. ¿Quieres que te reenviemos el correo de verificación?") },
+            confirmButton = {
+                Button(onClick = {
+                    authViewModel.sendVerificationEmail()
+                    showVerificationDialog = false
+                }) {
+                    Text("Reenviar correo")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showVerificationDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 
     Box(
@@ -61,8 +91,6 @@ fun LoginScreen(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        //  Color(0xFF1E88E5), // Azul brillante
-                        // Color(0xFF1565C0), // Azul medio
                         Color(0xFF0D47A1), // Azul más oscuro
                         Color(0xFF000000)  // Negro
                     )
@@ -78,7 +106,6 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            //QuickSportsTitleWhiteWithBlackBorder()
             Spacer(modifier = Modifier.height(20.dp))
 
             QuickSportsTitleGradient()
@@ -132,8 +159,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-
-                if (authResult is Result.Loading) {
+                if (authResult is AuthResult.Loading) {
                     CircularProgressIndicator(color = Color.White)
                 } else {
                     ButtonPrimary(
@@ -151,7 +177,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(50.dp))
 
-
                 TextButton(onClick = onRegisterClick) {
                     Text(
                         "¿No tienes cuenta? Regístrate aquí.",
@@ -164,19 +189,4 @@ fun LoginScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    val fakeViewModel = AuthViewModel(
-        RegisterUseCase(),
-        LoginUseCase()
-    )
 
-    IpSportsTheme {
-        LoginScreen(
-            authViewModel = fakeViewModel,
-            onNavigateToHome = { println("Ir al Home") },
-            onRegisterClick = { println("Ir a pantalla de registro") }
-        )
-    }
-}
