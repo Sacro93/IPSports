@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Article
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -16,9 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.ipsports.View.Reusable.BottomNavigationBar
 @Composable
@@ -124,9 +124,9 @@ fun ProfileScreen(
                     colors = CardDefaults.cardColors(containerColor = Color(0xFF121212))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        ProfileOption(icon = Icons.Default.Help, label = "Ayuda", onClick = onHelpClick)
+                        ProfileOption(icon = Icons.AutoMirrored.Filled.Help, label = "Ayuda", onClick = onHelpClick)
                         ProfileOption(icon = Icons.Default.Person, label = "Editar Perfil", onClick = onEditProfileClick)
-                        ProfileOption(icon = Icons.Default.Article, label = "Términos y Condiciones", onClick = onTermsClick)
+                        ProfileOption(icon = Icons.AutoMirrored.Filled.Article, label = "Términos y Condiciones", onClick = onTermsClick)
                         ProfileOption(icon = Icons.Default.Notifications, label = "Notificaciones", onClick = onNotificationsClick)
                         ProfileOption(icon = Icons.Default.Warning, label = "Cerrar Cuenta", onClick = onCloseAccountClick, isWarning = true)
                     }
@@ -167,19 +167,3 @@ fun ProfileOption(
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF000000)
-@Composable
-fun ProfileScreenPreview() {
-    ProfileScreen(
-        currentRoute = "profile",
-        onNavigate = { println("Navigate to $it") },
-        username = "Francisco Santiago",
-        email = "sacroisky93@example.com",
-        profileImage = null,
-        onHelpClick = { println("Ayuda clickeada") },
-        onEditProfileClick = { println("Editar perfil clickeado") },
-        onTermsClick = { println("Términos y condiciones clickeados") },
-        onNotificationsClick = { println("Notificaciones clickeadas") },
-        onCloseAccountClick = { println("Cerrar cuenta clickeado") }
-    )
-}

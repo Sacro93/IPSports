@@ -17,10 +17,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ipsports.R
-import com.example.ipsports.View.theme.Color.IpSportsTheme
 
 @Composable
 fun FeatureCard(
@@ -65,17 +62,6 @@ fun FeatureCard(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(16.dp)
-        )
-    }
-}
-@Preview(showBackground = true)
-@Composable
-fun FeatureCardPreview() {
-    IpSportsTheme {
-        FeatureCard(
-            imageRes = R.drawable.brc,
-            title = "Create Your Own Event",
-            onClick = {}
         )
     }
 }

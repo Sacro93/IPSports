@@ -13,7 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.ipsports.R
 import com.example.ipsports.View.Reusable.BottomNavigationBar
 import com.example.ipsports.View.Reusable.FeatureCard
-import com.example.ipsports.View.theme.Color.IpSportsTheme
 import com.example.ipsports.View.theme.Font.QuickSportsTitleGradient
 
 @Composable
@@ -100,7 +99,7 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    IpSportsTheme {
+
         HomeScreen(
             currentRoute = "home",
             onNavigate = { println("Navegar a $it") },
@@ -111,5 +110,5 @@ fun HomeScreenPreview() {
             onStatsClick = { println("Ir a estadísticas") },
             onLogout = { println("Cerrar sesión") }
         )
-    }
+
 }

@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.ipsports.View.theme.Color.IpSportsTheme
 import java.util.Calendar
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -80,15 +79,3 @@ fun EventInputField(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun EventInputFieldPreview() {
-    IpSportsTheme {
-        EventInputField(
-            label = "Fecha y Hora",
-            value = "28/01/2025",
-            onValueChange = {},
-            leadingIcon = { Icon(Icons.Default.DateRange, contentDescription = "Fecha") }
-        )
-    }
-}

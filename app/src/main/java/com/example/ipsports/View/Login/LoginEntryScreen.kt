@@ -13,10 +13,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.ipsports.View.Reusable.ButtonPrimary
-import com.example.ipsports.View.theme.Color.IpSportsTheme
+import com.example.ipsports.View.theme.Font.QS
 
 @Composable
-fun LoginEntryScreen() {
+fun LoginEntryScreen(onNavigateToLogin: () -> Unit,
+                     onNavigateToRegister: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -39,6 +40,8 @@ fun LoginEntryScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+
+            QS()
             // Título de la pantalla
             Text(
                 text = "¡Bienvenido!",
@@ -52,7 +55,7 @@ fun LoginEntryScreen() {
             // Botón "Iniciar Sesión" (Usando ButtonPrimary)
             ButtonPrimary(
                 text = "Iniciar Sesión",
-                onClick = { /* Lógica de inicio de sesión */ },
+                onClick = { onNavigateToLogin() },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .width(280.dp) // Opcional: Puedes usar Modifier.fillMaxWidth()
@@ -64,7 +67,7 @@ fun LoginEntryScreen() {
 
             ButtonPrimary(
                 text = "Registrarse",
-                onClick = { /* Navegar a SignUpScreen */ },
+                onClick = { onNavigateToRegister() },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .width(280.dp)
@@ -73,11 +76,3 @@ fun LoginEntryScreen() {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun LoginEntryScreenPreview() { // Cambia el nombre de la preview
-    IpSportsTheme {
-        LoginEntryScreen() // Llama al composable principal
-    }
-}

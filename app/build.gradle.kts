@@ -1,9 +1,12 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     kotlin("plugin.serialization") version "1.9.10"
     id("com.google.gms.google-services")
+    alias(libs.plugins.hilt)
+    kotlin("kapt")
 
 }
 
@@ -31,11 +34,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -44,18 +47,41 @@ android {
         kotlinCompilerExtensionVersion = "2.0.0" // Alineado con Kotlin 2.0
 
     }
+    // Permitir referencias a código generado
+    kapt {
+        correctErrorTypes = true
+    }
 }
 
 dependencies {
 
     //firebase
-    implementation(libs.firebase.bom)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
 
-// Navegación en Compose
+    //HILT
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-compiler:2.51.1")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // ViewModel
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // KotlinX Coroutines para Firebase
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    //screen principal
+    implementation(libs.androidx.core.splashscreen)
+
+//google places
+    implementation (libs.places)
 
 
-    implementation(libs.coil.compose)
     // Componentes principales de Compose
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -65,16 +91,16 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.material3.v120)
+    implementation(libs.androidx.compose.material.core)
+    implementation(libs.coil.compose)
 
-// Navegación en Compose
-    implementation(libs.androidx.compose.material.core)
-    implementation(libs.androidx.compose.material.core)
 //dependencias mas nuevas de material 01/2025
-        implementation (libs.androidx.material3.v110)
-        implementation (libs.ui)
-        implementation (libs.androidx.foundation)
-        implementation (libs.androidx.runtime)
-        implementation (libs.androidx.ui.text)
+    implementation(libs.androidx.material3.v110)
+    implementation(libs.ui)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.runtime)
+    implementation(libs.androidx.ui.text)
 
 //animation
 
@@ -96,7 +122,6 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -104,8 +129,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-
 
 
 }

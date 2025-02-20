@@ -1,4 +1,4 @@
-package com.example.ipsports.View.theme.Color
+package com.example.ipsports.View.theme.Font
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
