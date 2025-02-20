@@ -1,4 +1,4 @@
-package com.example.ipsports.Model
+package com.example.ipsports.Model.Auth
 
 import android.util.Patterns
 

@@ -16,18 +16,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.ipsports.Model.Auth.AuthResult
 import com.example.ipsports.Model.RoutesNavigation.Routes
-import com.example.ipsports.Model.ValidationUtils
+import com.example.ipsports.Model.Auth.ValidationUtils
 import com.example.ipsports.View.Reusable.ButtonPrimary
 import com.example.ipsports.View.Reusable.LocationDropdown
 import com.example.ipsports.View.Reusable.ReusableInputField
 import com.example.ipsports.View.theme.Font.QS
 import com.example.ipsports.ViewModel.Auth.AuthViewModel
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.delay
 
 /*Resumen y Consideraciones
 Consolidamos la verificación de email en un único flujo usando un DisposableEffect para escuchar los cambios de autenticación, y un LaunchedEffect que reacciona cuando se activa el estado de verificación.
@@ -61,7 +58,6 @@ fun RegisterScreen(
     // Estados para controlar la UI
     var isRegistering by remember { mutableStateOf(false) }
     var showEmailSentDialog by remember { mutableStateOf(false) }
-    var showVerificationDialog by remember { mutableStateOf(false) }
     var errorMessages by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var isRegistrationSuccessful by remember { mutableStateOf(false) } // Nuevo estado
 
