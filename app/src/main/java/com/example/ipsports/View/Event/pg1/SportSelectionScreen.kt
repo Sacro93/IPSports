@@ -11,13 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ipsports.R
 import com.example.ipsports.View.Event.ReusableEvent.EventCreationProgressBar
 import com.example.ipsports.View.Reusable.ButtonPrimary
 import com.example.ipsports.View.Event.pg2.SportSelectionCard
-import com.example.ipsports.View.theme.Color.IpSportsTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,17 +103,3 @@ fun SportSelectionScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SportSelectionScreenPreview() {
-    var selectedSport by remember { mutableStateOf<String?>(null) }
-
-    IpSportsTheme {
-        SportSelectionScreen(
-            selectedSport = selectedSport,
-            onSportSelected = { selectedSport = it },
-            onBack = { println("Volver al menú") },
-            onContinue = { println("Continuar con el deporte: $selectedSport") }
-        )
-    }
-}

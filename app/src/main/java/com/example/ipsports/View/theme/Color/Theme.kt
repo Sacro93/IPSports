@@ -45,15 +45,4 @@ private val AppTypography = Typography(
     )
 )
 
-@Composable
-fun IpSportsTheme(
-    darkTheme: Boolean = true, // Por defecto, tema oscuro
-    content: @Composable () -> Unit
-) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = AppTypography,
-        content = content
-    )
-}
+

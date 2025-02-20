@@ -8,6 +8,7 @@ import com.example.ipsports.Model.Auth.AuthRepository
 import com.example.ipsports.Model.Auth.AuthResult
 import com.example.ipsports.Model.Usecase.LoginUseCase
 import com.example.ipsports.Model.Usecase.RegisterUseCase
+import com.example.ipsports.Model.ValidationUtils
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -35,37 +36,68 @@ class AuthViewModel @Inject constructor(
     private val _emailVerificationResult = MutableLiveData<Pair<Boolean, String?>>()
     val emailVerificationResult: LiveData<Pair<Boolean, String?>> = _emailVerificationResult
 
-    fun registerUser(email: String, password: String, confirmPassword: String, name: String, surname: String, location: String) {
+    fun registerUser(
+        email: String,
+        password: String,
+        confirmPassword: String,
+        name: String,
+        surname: String,
+        location: String
+    ) {
         _authResult.value = AuthResult.Loading
 
-        if (email.isBlank() || name.isBlank() || surname.isBlank() || location.isBlank()) {
+        // Validaciones usando ValidationUtils
+        if (!ValidationUtils.areFieldsNotEmpty(email, name, surname, location)) {
             _authResult.value = AuthResult.Failure(Exception("Todos los campos son obligatorios"))
             return
         }
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!ValidationUtils.isValidEmail(email)) {
             _authResult.value = AuthResult.Failure(Exception("Correo electrónico no válido"))
             return
         }
 
-        if (!isValidPassword(password)) {
+        if (!ValidationUtils.isValidPassword(password)) {
             _authResult.value = AuthResult.Failure(Exception("La contraseña debe tener al menos 8 caracteres y una mayúscula"))
             return
         }
 
-        if (password != confirmPassword) {
+        if (!ValidationUtils.doPasswordsMatch(password, confirmPassword)) {
             _authResult.value = AuthResult.Failure(Exception("Las contraseñas no coinciden"))
             return
         }
 
         registerUseCase(email, password, name, surname, location) { result ->
             _authResult.postValue(result)
-
-            if (result is AuthResult.Success) {
-                sendVerificationEmail()  // ✅ Enviar email automáticamente tras el registro
-            }
         }
+
+        // Registrar usuario en Firebase Auth
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = FirebaseAuth.getInstance().currentUser
+                    if (user != null) {
+                        // Guardar datos del usuario en Firestore
+                        authRepository.saveUserData(
+                            userId = user.uid,
+                            name = name,
+                            surname = surname,
+                            email = email,
+                            location = location
+                        ) { result ->
+                            _authResult.postValue(result)
+                        }
+                    } else {
+                        _authResult.value = AuthResult.Failure(Exception("Error al obtener el usuario autenticado"))
+                    }
+                } else {
+                    _authResult.value = AuthResult.Failure(task.exception ?: Exception("Error al registrar el usuario"))
+                }
+            }
     }
+
+
+
 
     fun loginUser(email: String, password: String) {
         _authResult.value = AuthResult.Loading
@@ -92,14 +124,12 @@ class AuthViewModel @Inject constructor(
 
     fun sendVerificationEmail() {
         authRepository.sendVerificationEmail { success, message ->
+            // Actualizar _emailVerificationResult con el resultado
             _emailVerificationResult.postValue(Pair(success, message))
         }
     }
 
-    private fun isValidPassword(password: String): Boolean {
-        val passwordRegex = Regex("^(?=.*[A-Z]).{8,}$")
-        return passwordRegex.matches(password)
-    }
+
 }
 
 

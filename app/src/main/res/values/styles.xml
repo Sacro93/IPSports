@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ✅ Tema base sin depender de Material3 -->
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <!-- ✅ Tema para el Splash Screen -->
+    <style name="Theme.SplashScreen" parent="BaseTheme">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.IpSports</item>
+    </style>
+
+    <!-- ✅ Tema normal de la app -->
+    <style name="Theme.IpSports" parent="BaseTheme">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+</resources>

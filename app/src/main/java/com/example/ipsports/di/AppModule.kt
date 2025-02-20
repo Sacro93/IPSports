@@ -1,5 +1,6 @@
-package com.example.ipsports.Model.Auth
+package com.example.ipsports.di
 
+import com.example.ipsports.Model.Auth.AuthRepository
 import com.example.ipsports.Model.Usecase.LoginUseCase
 import com.example.ipsports.Model.Usecase.RegisterUseCase
 import com.google.firebase.auth.FirebaseAuth

@@ -28,26 +28,19 @@ import com.example.ipsports.Model.RoutesNavigation.Routes
 import com.example.ipsports.R
 import com.example.ipsports.View.theme.Font.QS
 import kotlinx.coroutines.delay
-
+/*
 @Composable
 fun LogoScreen(navController: NavController) {
-    LaunchedEffect(Unit) {
-        delay(3000) // Esperar 3 segundos
-        navController.navigate(Routes.LOGIN_ENTRY) {
-            popUpTo(Routes.SPLASH) { inclusive = true }
-        }
-    }
-
-    val infiniteTransition = rememberInfiniteTransition()
-
-    // 🔹 Animación de escala (efecto de rebote)
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 0.8f, targetValue = 1.1f,
+    val transition = rememberInfiniteTransition()
+    val scale by transition.animateFloat(
+        initialValue = 0.7f, targetValue = 1.2f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = FastOutSlowInEasing),
+            animation = tween(1500, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         )
     )
+
+
 
     Box(
         modifier = Modifier
@@ -55,11 +48,10 @@ fun LogoScreen(navController: NavController) {
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-
-                        Color(0xFF1E88E5), // Azul brillante
-                        Color(0xFF1565C0), // Azul medio
-                        Color(0xFF0D47A1) , // Azul oscuro
-                                Color(0xFF000000)  // Negro (final)
+                        Color(0xFF1E88E5),
+                        Color(0xFF1565C0),
+                        Color(0xFF0D47A1),
+                        Color(0xFF000000)
                     )
                 )
             ),
@@ -69,12 +61,10 @@ fun LogoScreen(navController: NavController) {
             modifier = Modifier
                 .size(300.dp)
                 .scale(scale),
-
             contentAlignment = Alignment.Center
         ) {
-            QS(
-
-            )
+            QS()
         }
     }
 }
+*/

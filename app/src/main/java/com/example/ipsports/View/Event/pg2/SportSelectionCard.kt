@@ -17,7 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ipsports.R
-import com.example.ipsports.View.theme.Color.IpSportsTheme
 
 @Composable
 fun SportSelectionCard(
@@ -69,7 +68,7 @@ fun SportSelectionCard(
 @Preview(showBackground = true)
 @Composable
 fun SportCardPreview() {
-    IpSportsTheme {
+
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.padding(16.dp)
@@ -82,6 +81,6 @@ fun SportCardPreview() {
 
 
         }
-    }
+
 }
 

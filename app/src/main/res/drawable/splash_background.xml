@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 🔹 Fondo con degradado -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="90"
+                android:startColor="#000000"
+                android:centerColor="#0D47A1"
+                android:endColor="#1E88E5"/>
+        </shape>
+    </item>
+
+    <!-- 🔹 Logo centrado -->
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@mipmap/iconlogo"/>
+    </item>
+
+</layer-list>

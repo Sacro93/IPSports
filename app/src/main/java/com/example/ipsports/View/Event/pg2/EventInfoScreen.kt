@@ -24,7 +24,6 @@ import com.example.ipsports.View.Event.ReusableEvent.EventCreationProgressBar
 import com.example.ipsports.View.Event.ReusableEvent.EventInputField
 import com.example.ipsports.View.Event.ReusableEvent.FieldType
 import com.example.ipsports.View.Reusable.ButtonPrimary
-import com.example.ipsports.View.theme.Color.IpSportsTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -164,16 +163,3 @@ fun EventInfoScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun EventInfoScreenPreview() {
-    IpSportsTheme {
-        EventInfoScreen(
-            onContinue = { println("Continuar a la próxima pantalla") },
-            selectedCourt = "Cancha 1",
-            courts = listOf("Cancha 1", "Cancha 2", "Cancha 3"),
-            onCourtSelected = { println("Cancha seleccionada: $it") },
-            onBack = { println("Volver atrás") }
-        )
-    }
-}

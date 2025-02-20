@@ -1,5 +1,6 @@
 package com.example.ipsports.Model.Auth
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -39,7 +40,7 @@ class AuthRepository @Inject constructor(
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val user = firebaseAuth.currentUser
-                    if (user?.isEmailVerified == true) {
+                    if (isUserVerified()) {
                         callback(AuthResult.Success(user))
                     } else {
                         callback(AuthResult.Failure(Exception("Debe verificar su correo antes de iniciar sesión.")))
@@ -50,7 +51,8 @@ class AuthRepository @Inject constructor(
             }
     }
 
-    private fun saveUserData(
+
+    fun saveUserData(
         userId: String,
         name: String,
         surname: String,
@@ -62,9 +64,9 @@ class AuthRepository @Inject constructor(
             "name" to name,
             "surname" to surname,
             "email" to email,
-            "location" to location,
-            "profileImage" to null,
-            "verified" to false // 🔹 Nuevo campo para saber si verificó el email
+            "location" to (location ?: "Barcelona"), // ✅ Usa "Barcelona" si location es null
+            "profileImageUrl" to "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y",
+            "verified" to false // ✅ Se usará para verificar el email más adelante
         )
 
         firestore.collection("users").document(userId)
@@ -73,23 +75,18 @@ class AuthRepository @Inject constructor(
             .addOnFailureListener { e -> callback(AuthResult.Failure(e)) }
     }
 
-    fun isUserVerified(): Boolean {
+    private fun isUserVerified(): Boolean {
         return firebaseAuth.currentUser?.isEmailVerified ?: false
     }
 
     fun sendVerificationEmail(callback: (Boolean, String?) -> Unit) {
-        val user = firebaseAuth.currentUser
-        if (user != null) {
-            user.sendEmailVerification()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        callback(true, null)
-                    } else {
-                        callback(false, task.exception?.message)
-                    }
-                }
-        } else {
-            callback(false, "Usuario no autenticado")
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.sendEmailVerification()?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d("Auth", "Correo de verificación enviado nuevamente.")
+            } else {
+                Log.e("Auth", "Error al enviar verificación: ${task.exception?.message}")
+            }
         }
     }
 

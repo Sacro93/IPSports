@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.ipsports.View.Reusable.ButtonPrimary
-import com.example.ipsports.View.theme.Color.IpSportsTheme
 import com.example.ipsports.View.theme.Font.QS
 
 @Composable

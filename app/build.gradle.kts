@@ -75,13 +75,13 @@ dependencies {
     // KotlinX Coroutines para Firebase
     implementation(libs.kotlinx.coroutines.play.services)
 
+    //screen principal
+    implementation(libs.androidx.core.splashscreen)
+
+//google places
+    implementation (libs.places)
 
 
-
-
-
-
-    implementation(libs.coil.compose)
     // Componentes principales de Compose
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -91,9 +91,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
-
+    implementation(libs.androidx.material3.v120)
     implementation(libs.androidx.compose.material.core)
-
+    implementation(libs.coil.compose)
 
 //dependencias mas nuevas de material 01/2025
     implementation(libs.androidx.material3.v110)
