@@ -10,30 +10,30 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import com.example.ipsports.R
 import com.example.ipsports.View.Reusable.BottomNavigationBar
 import com.example.ipsports.View.Reusable.FeatureCard
 import com.example.ipsports.View.theme.Font.QuickSportsTitleGradient
+import com.example.ipsports.data.DatosDefault.populateFirestore
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
+    navController: NavController,
     currentRoute: String,
     onNavigate: (String) -> Unit,
-    username: String,
-    userImage: String? = null,  // Imagen de perfil (puede ser nula)
-    userInitials: String = "FS", // Iniciales en caso de no haber imagen
-    onEditProfile: () -> Unit,
-    onStatsClick: () -> Unit,
-    onLogout: () -> Unit
+
 ) {
     Scaffold(
         bottomBar = {
             BottomNavigationBar(
                 currentRoute = currentRoute,
                 onNavigate = onNavigate,
-                userImage = userImage,
-                userInitials = userInitials,
-                onProfileClick = onEditProfile
+
             )
         }
     ) { padding ->
@@ -75,7 +75,7 @@ fun HomeScreen(
                 FeatureCard(
                     imageRes = R.drawable.brc,
                     title = "Create Your Own Event",
-                    onClick = { /* Acción de ejemplo */ }
+                    onClick = { /* vaya al composable SportSelectionScreen()*/ }
                 )
                 FeatureCard(
                     imageRes = R.drawable.grupo,
@@ -93,22 +93,27 @@ fun HomeScreen(
             }
         }
     }
+
+  //  DebugFirestoreScreen(firestore = FirebaseFirestore.getInstance())
 }
 
-// 📌 **Preview de la HomeScreen**
-@Preview(showBackground = true)
+
 @Composable
-fun HomeScreenPreview() {
-
-        HomeScreen(
-            currentRoute = "home",
-            onNavigate = { println("Navegar a $it") },
-            username = "Francisco",
-            userImage = null, // Puedes agregar una URL si el usuario tiene imagen
-            userInitials = "FS",
-            onEditProfile = { println("Editar perfil") },
-            onStatsClick = { println("Ir a estadísticas") },
-            onLogout = { println("Cerrar sesión") }
-        )
-
+fun DebugFirestoreScreen(firestore: FirebaseFirestore) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = {
+            CoroutineScope(Dispatchers.IO).launch {
+                populateFirestore(firestore)
+            }
+        }) {
+            Text("🔄 Poblar Firestore")
+        }
+    }
 }
+
+
+

@@ -1,4 +1,4 @@
-package com.example.ipsports.Model.Auth
+package com.example.ipsports.data.Auth
 
 import com.google.firebase.auth.FirebaseUser
 

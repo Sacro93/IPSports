@@ -62,10 +62,10 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
 
     //HILT
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-compiler:2.51.1")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.hilt.navigation.compose)
 
@@ -78,8 +78,8 @@ dependencies {
     //screen principal
     implementation(libs.androidx.core.splashscreen)
 
-//google places
-    implementation (libs.places)
+//data
+    implementation (libs.androidx.datastore.preferences)
 
 
     // Componentes principales de Compose
@@ -91,7 +91,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.material3.v120)
     implementation(libs.androidx.compose.material.core)
     implementation(libs.coil.compose)
 
@@ -129,6 +128,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.androidx.material3.v121) // 📌 Última versión de Compose Material 3
 
 
 }

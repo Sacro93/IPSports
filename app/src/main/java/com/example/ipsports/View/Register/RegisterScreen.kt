@@ -5,10 +5,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -17,14 +17,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.ipsports.Model.Auth.AuthResult
-import com.example.ipsports.Model.RoutesNavigation.Routes
-import com.example.ipsports.Model.Auth.ValidationUtils
+import com.example.ipsports.data.Auth.AuthResult
+import com.example.ipsports.data.Routes
+import com.example.ipsports.data.Auth.ValidationUtils
 import com.example.ipsports.View.Reusable.ButtonPrimary
 import com.example.ipsports.View.Reusable.LocationDropdown
 import com.example.ipsports.View.Reusable.ReusableInputField
 import com.example.ipsports.View.theme.Font.QS
-import com.example.ipsports.ViewModel.Auth.AuthViewModel
+import com.example.ipsports.ViewModel.Autenticacion.AuthViewModel
+import com.example.ipsports.ViewModel.ui.UserViewModel
+import kotlinx.coroutines.delay
 
 /*Resumen y Consideraciones
 Consolidamos la verificación de email en un único flujo usando un DisposableEffect para escuchar los cambios de autenticación, y un LaunchedEffect que reacciona cuando se activa el estado de verificación.
@@ -40,6 +42,240 @@ Enviar el correo de verificación al registrar.
 Mostrar una notificación de que se envió el correo.
 Detectar automáticamente cuando el usuario verifica su correo y redirigirlo a la pantalla de inicio de sesión.*/
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RegisterScreen(
+    authViewModel: AuthViewModel = hiltViewModel(),
+    navController: NavHostController,
+    onBack: () -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    var surname by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("Barcelona") }
+
+    var isRegistering by remember { mutableStateOf(false) }
+    var showEmailSentDialog by remember { mutableStateOf(false) }
+    var errorMessages by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+
+    val authResult by authViewModel.authResult.collectAsState()  // ✅ Cambiado a collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() } // ✅ Para mostrar errores con Snackbar
+
+    val isEmailValid by remember { derivedStateOf { ValidationUtils.isValidEmail(email) } }
+    val isPasswordValid by remember { derivedStateOf { ValidationUtils.isValidPassword(password) } }
+
+    val userViewModel: UserViewModel = hiltViewModel() // 🔹 Agregar UserViewModel
+
+    val doPasswordsMatch by remember {
+        derivedStateOf {
+            ValidationUtils.doPasswordsMatch(
+                password,
+                confirmPassword
+            )
+        }
+    }
+
+    LaunchedEffect(authResult) {
+        println("🔹 Cambio en authResult: $authResult")
+
+        when (authResult) {
+            is AuthResult.Loading -> {
+                isRegistering = true
+                println("🔄 Registrando usuario...")
+            }
+
+            is AuthResult.Success -> {
+                isRegistering = false
+                showEmailSentDialog = true
+                println("✅ Usuario registrado en Firebase Auth")
+
+                delay(3000) // ⏳ Espera 3 segundos antes de redirigir
+                navController.navigate(Routes.LOGIN) {
+                    popUpTo(Routes.REGISTER) { inclusive = true }
+                }
+            }
+
+            is AuthResult.Failure -> {
+                isRegistering = false
+                val error = (authResult as AuthResult.Failure).exception.message ?: "Error desconocido"
+                errorMessages = mapOf("general" to error)
+                println("❌ Error en registro: $error")
+                snackbarHostState.showSnackbar(error)
+            }
+
+            else -> Unit
+        }
+    }
+
+
+    // Diálogo para notificar que se envió el email de verificación
+    if (showEmailSentDialog) {
+        AlertDialog(
+            onDismissRequest = { showEmailSentDialog = false },
+            title = { Text("Verificación enviada") },
+            text = { Text("Debes corroborar tu correo electrónico para completar el registro.") },
+            confirmButton = {
+                Button(onClick = { showEmailSentDialog = false }) {
+                    Text("Aceptar")
+                }
+            }
+        )
+    }
+
+    // UI
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, // ✅ Agregado Snackbar
+        topBar = {
+            TopAppBar(
+                title = { Text("Registro", color = Color.White) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            )
+        }
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF1E88E5),
+                            Color(0xFF1565C0),
+                            Color(0xFF000000)
+                        )
+                    )
+                )
+                .padding(padding),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                QS()
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.Black.copy(alpha = 0.3f))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        ReusableInputField(
+                            value = name,
+                            onValueChange = { name = it },
+                            label = "Nombre",
+                            leadingIcon = Icons.Default.Person
+                        )
+                        ReusableInputField(
+                            value = surname,
+                            onValueChange = { surname = it },
+                            label = "Apellido",
+                            leadingIcon = Icons.Default.Person
+                        )
+                        // Campo de correo electrónico
+                        ReusableInputField(
+                            label = "Correo Electrónico",
+                            value = email,
+                            onValueChange = {
+                                email = it
+                                errorMessages = errorMessages - "email"
+                            },
+                            leadingIcon = Icons.Default.Email
+                        )
+                        if (email.isNotBlank() && !isEmailValid) {
+                            Text("Correo electrónico no válido", color = Color.Red, fontSize = 12.sp)
+                        }
+                        ReusableInputField(
+                            value = password,
+                            onValueChange = { password = it },
+                            label = "Contraseña",
+                            isPassword = true,
+                            leadingIcon = Icons.Default.Lock
+                        )
+                        ReusableInputField(
+                            value = confirmPassword,
+                            onValueChange = { confirmPassword = it },
+                            label = "Confirmar Contraseña",
+                            isPassword = true,
+                            leadingIcon = Icons.Default.Lock
+                        )
+
+                        // Validaciones en tiempo real
+                        if (email.isNotBlank() && !isEmailValid) {
+                            Text(
+                                "Correo electrónico no válido",
+                                color = Color.Red,
+                                fontSize = 12.sp
+                            )
+                        }
+                        if (password.isNotBlank() && !isPasswordValid) {
+                            Text(
+                                "La contraseña debe tener al menos 8 caracteres y una mayúscula",
+                                color = Color.Red,
+                                fontSize = 12.sp
+                            )
+                        }
+                        if (confirmPassword.isNotBlank() && !doPasswordsMatch) {
+                            Text(
+                                "Las contraseñas no coinciden",
+                                color = Color.Red,
+                                fontSize = 12.sp
+                            )
+                        }
+
+                        // Selector de ubicación
+                        LocationDropdown(location) { location = it }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                ButtonPrimary(
+                    text = if (isRegistering) "Registrando..." else "Registrarse",
+                    onClick = {
+                        println("🔹 Botón de registro presionado") // ✅ Debug en Logcat
+                        errorMessages = emptyMap()
+                        authViewModel.registerUser(
+                            email,
+                            password,
+                            confirmPassword,
+                            name,
+                            surname,
+                            location
+                        )
+                    },
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .width(200.dp),
+                    enabled = true
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Mostrar errores generales
+                if (errorMessages.containsKey("general")) {
+                    Text(errorMessages["general"] ?: "", color = Color.Red, fontSize = 14.sp)
+                }
+            }
+        }
+    }
+}
+
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
@@ -285,3 +521,5 @@ fun RegisterScreen(
         }
     }
 }
+
+*/

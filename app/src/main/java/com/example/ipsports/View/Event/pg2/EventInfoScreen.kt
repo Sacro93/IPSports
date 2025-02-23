@@ -24,10 +24,10 @@ import com.example.ipsports.View.Event.ReusableEvent.EventCreationProgressBar
 import com.example.ipsports.View.Event.ReusableEvent.EventInputField
 import com.example.ipsports.View.Event.ReusableEvent.FieldType
 import com.example.ipsports.View.Reusable.ButtonPrimary
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventInfoScreen(
+    selectedSport: String, // 🔹 Agregar el parámetro aquí
     onContinue: () -> Unit,
     selectedCourt: String?,
     courts: List<String>,
@@ -39,15 +39,11 @@ fun EventInfoScreen(
     var address by remember { mutableStateOf("") }
     var maxParticipants by remember { mutableStateOf("") }
     var selectedCourt by remember { mutableStateOf<String?>(null) }
-    var showDialog by remember { mutableStateOf(false) }
-    var showWarning by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
-            Spacer(modifier = Modifier.height(32.dp))
-
             TopAppBar(
-                title = { Text("Información del Evento", color = Color.White) },
+                title = { Text("Evento de $selectedSport", color = Color.White) }, // 🔹 Usar el deporte en la barra superior
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = Color.White)
@@ -63,9 +59,9 @@ fun EventInfoScreen(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF337C8D), // Azul verdoso claro
-                            Color(0xFF15272D), // Azul grisáceo oscuro
-                            Color(0xFF17272B)  // Casi negro
+                            Color(0xFF337C8D),
+                            Color(0xFF15272D),
+                            Color(0xFF17272B)
                         )
                     )
                 )
@@ -80,15 +76,22 @@ fun EventInfoScreen(
             ) {
                 Spacer(modifier = Modifier.height(24.dp))
 
-                EventCreationProgressBar(currentPage = 2, totalPages = 4)
+                EventCreationProgressBar(currentPage = 3, totalPages = 4)
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // 📆 **Campos de Información del Evento**
+                // ✅ Mostrar el deporte seleccionado
+                Text(
+                    text = "Deporte seleccionado: $selectedSport",
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // 📆 Campos de Información del Evento
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = Color.Black.copy(alpha = 0.3f))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -128,7 +131,7 @@ fun EventInfoScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 🏟️ **Selector de Cancha**
+                // 🏟️ Selector de Cancha
                 OptionCourts(
                     selectedCourt = selectedCourt,
                     courts = courts,
@@ -137,18 +140,7 @@ fun EventInfoScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 🏆 **Botón para Agregar Amigos**
-                ButtonPrimary(
-                    text = "Agregar Amigos",
-                    onClick = { /* Lógica para abrir selección de amigos */ },
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .width(180.dp)
-                )
-
-                Spacer(modifier = Modifier.height(180.dp))
-
-                // ✔ **Botón de Confirmar**
+                // ✔ Botón de Confirmar
                 ButtonPrimary(
                     text = "Confirmar",
                     onClick = onContinue,
@@ -156,10 +148,7 @@ fun EventInfoScreen(
                         .align(Alignment.CenterHorizontally)
                         .width(250.dp)
                 )
-
-
             }
         }
     }
 }
-

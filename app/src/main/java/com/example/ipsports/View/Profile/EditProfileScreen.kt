@@ -1,6 +1,5 @@
 package com.example.ipsports.View.Profile
 
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.ipsports.View.Reusable.ButtonPrimary
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,27 +22,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.ipsports.View.Reusable.ReusableInputField
+import com.example.ipsports.ViewModel.ui.UserViewModel
+import com.example.ipsports.data.model.User
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun EditProfileScreen(
-    profileImage: String?, // Imagen de perfil (futuro: desde BD)
-    userData: UserData, // Datos del usuario obtenidos desde la BD
+    userViewModel: UserViewModel = hiltViewModel(),
+    profileImage: String?,
+    userData: User,
     onPhotoSelected: () -> Unit,
     onTakePhoto: () -> Unit,
-    onSaveChanges: (String, String, String, String, String, String) -> Unit,
     onBack: () -> Unit
 ) {
-    var showPhotoDialog by remember { mutableStateOf(false) }
 
     // Estados controlados (futuro: reemplazados por ViewModel)
-    var nombre by remember { mutableStateOf(userData.nombre) }
-    var apellido by remember { mutableStateOf(userData.apellido) }
+    var showPhotoDialog by remember { mutableStateOf(false) }
+
+    // Estados controlados (ahora cargados desde `userData`)
+    var nombre by remember { mutableStateOf(userData.name) }
+    var apellido by remember { mutableStateOf(userData.surname) }
     var email by remember { mutableStateOf(userData.email) }
-    var phone by remember { mutableStateOf(userData.phone) }
-    var password by remember { mutableStateOf(userData.password) }
-    var domicilio by remember { mutableStateOf(userData.domicilio) }
+    var phone by remember { mutableStateOf("") }  // Agregar si el modelo tiene phone
+    var password by remember { mutableStateOf("") }  // No se debe almacenar la contraseña directamente
+    var domicilio by remember { mutableStateOf(userData.location) }
+
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     Column(
         modifier = Modifier
@@ -158,10 +165,22 @@ fun EditProfileScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 📌 **Botón Guardar Cambios**
+
         ButtonPrimary(
             text = "Guardar Cambios",
-            onClick = { onSaveChanges(nombre, apellido, email, phone, domicilio, password) },
+            onClick = {
+                val updatedUser = User(
+                    id = userId ?: "",
+                    name = nombre,
+                    surname = apellido,
+                    email = email,
+                    location = domicilio,
+                    profileImageUrl = profileImage ?: "" // 🔹 Asegurar que no sea null
+                )
+
+
+                userViewModel.updateUser(updatedUser) // ✅ Llamamos a updateUser(user)
+            },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .width(250.dp)
@@ -205,38 +224,5 @@ fun EditProfileScreen(
             }
         )
     }
-}
-
-// **📌 Modelo de datos para recibir desde BD**
-data class UserData(
-    val nombre: String,
-    val apellido: String,
-    val email: String,
-    val phone: String,
-    val domicilio: String,
-    val password: String
-)
-
-
-@Preview(showBackground = true, backgroundColor = 0xFF000000)
-@Composable
-fun EditProfileScreenPreview() {
-    EditProfileScreen(
-        profileImage = null, // Puedes cambiar esto para probar con una URL de imagen
-        userData = UserData(
-            nombre = "Francisco",
-            apellido = "Santiago",
-            email = "sacroisky93@example.com",
-            phone = "+34 600 123 456",
-            domicilio = "Barcelona, España",
-            password = "***********"
-        ),
-        onPhotoSelected = { println("Seleccionar foto de galería") },
-        onTakePhoto = { println("Abrir cámara") },
-        onSaveChanges = { nombre, apellido, email, phone, domicilio, password ->
-            println("Guardado: $nombre, $apellido, $email, $phone, $domicilio, $password")
-        },
-        onBack = { println("Volver") }
-    )
 }
 
