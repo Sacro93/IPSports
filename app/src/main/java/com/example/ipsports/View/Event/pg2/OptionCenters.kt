@@ -1,6 +1,5 @@
 package com.example.ipsports.View.Event.pg2
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,38 +15,36 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.ipsports.data.model.Center
+
 
 @Composable
-fun OptionCourts(
-    selectedCourt: String?, // Cancha seleccionada
-    courts: List<String>,   // Lista de canchas disponibles
-    onCourtSelected: (String) -> Unit, // Acción cuando se selecciona una cancha
+fun OptionCenters(
+    selectedCenter: Center?,
+    centers: List<Center>,
+    onCenterSelected: (Center) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(false) } // Estado del menú desplegable
+    var expanded by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
-        // Contenedor con borde
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .border(
                     width = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Borde gris suave
-                    shape = RoundedCornerShape(8.dp) // Esquinas redondeadas
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(8.dp)
                 )
-                .clickable { expanded = !expanded } // Abre/cierra el menú al tocar
-                .padding(horizontal = 16.dp, vertical = 12.dp) // Espaciado interno
+                .clickable { expanded = !expanded }
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            // Texto del selector
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = selectedCourt ?: "Seleccionar Cancha",
+                    text = selectedCenter?.name ?: "Seleccionar Centro Deportivo",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f) // Ocupa el espacio restante
+                    modifier = Modifier.weight(1f)
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
@@ -57,17 +54,13 @@ fun OptionCourts(
             }
         }
 
-        // Menú desplegable
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            courts.forEach { court ->
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            centers.forEach { center ->
                 DropdownMenuItem(
-                    text = { Text(court) },
+                    text = { Text(center.name) },
                     onClick = {
-                        onCourtSelected(court) // Actualiza la cancha seleccionada
-                        expanded = false // Cierra el menú
+                        onCenterSelected(center)
+                        expanded = false
                     }
                 )
             }

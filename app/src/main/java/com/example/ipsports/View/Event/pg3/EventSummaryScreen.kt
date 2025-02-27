@@ -97,7 +97,6 @@ fun EventSummaryScreen(
     }
 }
 
-// 🔹 **Mejorar `InfoRow` para que los iconos y texto se vean mejor en el nuevo fondo**
 @Composable
 fun InfoRow(label: String, value: String, icon: ImageVector) {
     Row(
@@ -108,7 +107,7 @@ fun InfoRow(label: String, value: String, icon: ImageVector) {
             imageVector = icon,
             contentDescription = null,
             tint = Color(0xFF76A9A0)
-        ) // Verde perlado
+        )
         Spacer(modifier = Modifier.width(8.dp))
         Text("$label: $value", style = MaterialTheme.typography.bodyLarge, color = Color.White)
     }

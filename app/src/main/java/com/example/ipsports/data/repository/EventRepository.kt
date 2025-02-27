@@ -15,7 +15,7 @@ class EventRepository @Inject constructor(
     /** Agrega un evento a Firestore y devuelve el ID generado */
     suspend fun addEvent(
         sportId: String,
-        courtId: String,
+        centerId: String,
         userId: String,
         invitedFriends: List<String>,
         date: Timestamp
@@ -23,7 +23,7 @@ class EventRepository @Inject constructor(
         return try {
             val newEvent = Event(
                 sportId = sportId,
-                courtId = courtId,
+                centerId = centerId,
                 userId = userId,
                 date = date,
                 usersInvited = invitedFriends

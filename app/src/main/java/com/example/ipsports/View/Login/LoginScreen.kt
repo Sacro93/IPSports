@@ -121,9 +121,6 @@ fun LoginScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     when (authResult) {
-                        is AuthResult.Loading -> {
-                            CircularProgressIndicator(color = Color.White)
-                        }
 
                         is AuthResult.Success -> {
                             onNavigateToHome()

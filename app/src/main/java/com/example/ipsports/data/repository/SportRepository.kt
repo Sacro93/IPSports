@@ -15,7 +15,7 @@ class SportRepository @Inject constructor(
         val result = sportsCollection.get().await()
         result.documents.mapNotNull { it.toObject(Sport::class.java) }
     } catch (e: Exception) {
-        emptyList() // En caso de error, devuelve lista vacía
+        emptyList()
     }
 
 }

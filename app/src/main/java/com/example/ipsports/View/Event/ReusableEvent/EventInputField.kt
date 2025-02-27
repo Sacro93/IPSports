@@ -23,6 +23,36 @@ fun EventInputField(
     onValueChange: (String) -> Unit,
     fieldType: FieldType = FieldType.Text, // Indica el tipo de campo (Texto, Fecha, Hora)
     leadingIcon: @Composable (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    onClick: @Composable (() -> Unit)? = null // ✅ Nuevo parámetro opcional
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = { if (fieldType == FieldType.Text) onValueChange(it) },
+        label = { Text(text = label) },
+        leadingIcon = leadingIcon,
+        singleLine = true,
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(enabled = fieldType != FieldType.Text) {
+                onClick?.invoke()
+            },
+        readOnly = fieldType != FieldType.Text // Hacerlo no editable si no es texto
+    )
+}
+
+
+
+
+
+/*
+@Composable
+fun EventInputField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    fieldType: FieldType = FieldType.Text, // Indica el tipo de campo (Texto, Fecha, Hora)
+    leadingIcon: @Composable (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -79,3 +109,4 @@ fun EventInputField(
 }
 
 
+*/

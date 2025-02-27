@@ -16,6 +16,7 @@ import com.example.ipsports.View.Reusable.BottomNavigationBar
 import com.example.ipsports.View.Reusable.FeatureCard
 import com.example.ipsports.View.theme.Font.QuickSportsTitleGradient
 import com.example.ipsports.data.DatosDefault.populateFirestore
+import com.example.ipsports.data.Routes
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -75,7 +76,7 @@ fun HomeScreen(
                 FeatureCard(
                     imageRes = R.drawable.brc,
                     title = "Create Your Own Event",
-                    onClick = { /* vaya al composable SportSelectionScreen()*/ }
+                    onClick = { navController.navigate(Routes.SPORT_SELECTION) }
                 )
                 FeatureCard(
                     imageRes = R.drawable.grupo,
