@@ -1,5 +1,6 @@
 package com.example.ipsports.View.HomeScreen
 
+import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -9,18 +10,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.ipsports.R
 import com.example.ipsports.View.Reusable.BottomNavigationBar
 import com.example.ipsports.View.Reusable.FeatureCard
 import com.example.ipsports.View.theme.Font.QuickSportsTitleGradient
+import com.example.ipsports.ViewModel.ui.EventViewModel
 import com.example.ipsports.data.DatosDefault.populateFirestore
-import com.example.ipsports.data.Routes
+import com.example.ipsports.data.DatosDefault.populateFriends
+import com.example.ipsports.data.routesNavigation.Routes
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @Composable
 fun HomeScreen(
@@ -28,14 +34,30 @@ fun HomeScreen(
     currentRoute: String,
     onNavigate: (String) -> Unit,
 
-) {
+    ) {
+
+    val viewModel: EventViewModel = hiltViewModel()
+
+    val eventViewModel: EventViewModel = hiltViewModel()
+    val latestEvent by eventViewModel.latestEvent.collectAsStateWithLifecycle()
+    val events by viewModel.eventsList.collectAsStateWithLifecycle()
+
+    val isLoading by eventViewModel.isLoading.collectAsStateWithLifecycle()
+
+    // 🔹 Obtener el userId del usuario autenticado
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+    // 🔹 Cargar eventos solo si userId no es nulo
+    LaunchedEffect(userId) {
+        userId?.let { eventViewModel.loadEventsByUser(it) }
+    }
     Scaffold(
         bottomBar = {
             BottomNavigationBar(
                 currentRoute = currentRoute,
                 onNavigate = onNavigate,
 
-            )
+                )
         }
     ) { padding ->
 
@@ -55,7 +77,6 @@ fun HomeScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
 
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -83,20 +104,41 @@ fun HomeScreen(
                     title = "Find Your Sport Match",
                     onClick = { /* Acción de ejemplo */ }
                 )
-                EventCard(
-                    sport = "Padel",
-                    date = "27 de Enero, 2025",
-                    location = "Club Deportivo Las Palmas",
-                    participants = listOf("Ana", "Luis", "María", "Juan"),
-                    maxParticipants = 8,
-                    modifier = Modifier.padding(16.dp)
+
+                FeatureCard(
+                    imageRes = R.drawable.grupo,
+                    title = "Active Events",
+                    onClick = { navController.navigate(Routes.ACTIVE_EVENTS) } // ✅ Ahora lleva a eventos activos
                 )
+                // 🔹 Mostrar evento más reciente si existe
+                if (isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                } else {
+                    latestEvent?.let { event ->
+                        EventCard(
+                            sport = event.sportId, // ✅ Mostrar nombre del deporte
+                            date = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(
+                                event.date.toDate()
+                            ),
+                            location = event.centerId, // 🔹 ID del centro (puedes hacer un mapping para mostrar el nombre)
+                            participants = event.usersInvited,
+                            maxParticipants = event.maxParticipants,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
             }
         }
     }
 
-  //  DebugFirestoreScreen(firestore = FirebaseFirestore.getInstance())
+      DebugFirestoreScreen(firestore = FirebaseFirestore.getInstance())
+    Spacer(modifier = Modifier.height(24.dp))
+
+    DebugFirestoreScreen2(firestore = FirebaseFirestore.getInstance())
 }
+
+
+
 
 
 @Composable
@@ -117,4 +159,19 @@ fun DebugFirestoreScreen(firestore: FirebaseFirestore) {
 }
 
 
-
+@Composable
+fun DebugFirestoreScreen2(firestore: FirebaseFirestore) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = {
+            CoroutineScope(Dispatchers.IO).launch {
+                populateFriends(firestore)
+            }
+        }) {
+            Text("🔄 Poblar Firestore")
+        }
+    }
+}

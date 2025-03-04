@@ -25,13 +25,17 @@ class UserViewModel @Inject constructor(
 
 
 
-    /** Obtiene el usuario desde Firestore */
+    /** 🔹 Carga el usuario desde Firestore */
     fun loadUser(userId: String) {
+        _isLoading.value = true
         viewModelScope.launch {
-            handleFirestoreOperation(
-                operation = { userRepository.getUser(userId) },
-                onSuccess = { user -> _user.value = user }
-            )
+            val result = userRepository.getUser(userId)
+            if (result.isSuccess) {
+                _user.value = result.getOrNull()
+            } else {
+                _errorMessage.value = "Error al cargar usuario: ${result.exceptionOrNull()?.localizedMessage}"
+            }
+            _isLoading.value = false
         }
     }
 
@@ -45,13 +49,17 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    /** Actualiza los datos del usuario */
+    /** 🔹 Actualiza los datos del usuario en Firestore */
     fun updateUser(user: User) {
         viewModelScope.launch {
-            handleFirestoreOperation(
-                operation = { userRepository.updateUser(user) },
-                onSuccess = { _user.value = user }
-            )
+            _isLoading.value = true
+            val result = userRepository.updateUser(user)
+            if (result.isFailure) {
+                _errorMessage.value = "Error al actualizar usuario: ${result.exceptionOrNull()?.localizedMessage}"
+            } else {
+                _user.value = user // 🔹 Refresca los datos después de actualizar en Firestore
+            }
+            _isLoading.value = false
         }
     }
 

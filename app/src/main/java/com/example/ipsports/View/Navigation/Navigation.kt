@@ -1,18 +1,24 @@
 package com.example.ipsports.View.Navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.ipsports.View.ActiveEventsScreen
 import com.example.ipsports.View.CentersScreen
 import com.example.ipsports.View.Event.pg1.SportSelectionScreen
 import com.example.ipsports.View.Event.pg2.EventInfoScreen
+import com.example.ipsports.View.Event.pg3.EventSummaryScreen
 import com.example.ipsports.View.HomeScreen.HomeScreen
 import com.example.ipsports.View.Login.LoginEntryScreen
 import com.example.ipsports.View.Login.LoginScreen
@@ -21,7 +27,7 @@ import com.example.ipsports.View.Profile.ProfileScreen
 import com.example.ipsports.View.Register.RegisterScreen
 import com.example.ipsports.ViewModel.Autenticacion.AuthViewModel
 import com.example.ipsports.ViewModel.ui.UserViewModel
-import com.example.ipsports.data.Routes
+import com.example.ipsports.data.routesNavigation.Routes
 
 @Composable
 fun Navigation(
@@ -31,11 +37,9 @@ fun Navigation(
     val isLoggedIn by authViewModel.isUserLoggedIn.collectAsStateWithLifecycle()
 
     LaunchedEffect(isLoggedIn, navController) {
-        println("🔥 Navegación - Estado de isLoggedIn: $isLoggedIn")
-
         if (!isLoggedIn && navController.currentDestination?.route != Routes.LOGIN_ENTRY) {
             navController.navigate(Routes.LOGIN_ENTRY) {
-                popUpTo(0) { inclusive = true } // ✅ Asegura que no haya pantallas en el stack
+                popUpTo(0) { inclusive = true }
             }
         }
     }
@@ -59,7 +63,7 @@ fun Navigation(
         composable(Routes.REGISTER) {
             RegisterScreen(
                 authViewModel = hiltViewModel(),
-                navController = navController, // ✅ Pasa correctamente el navController
+                navController = navController,
                 onBack = {
                     if (!navController.popBackStack(Routes.LOGIN_ENTRY, inclusive = false)) {
                         navController.navigate(Routes.LOGIN_ENTRY) {
@@ -91,31 +95,61 @@ fun Navigation(
 
         //  **Pantalla de Información del Evento**
         composable("event_info/{selectedSport}") { backStackEntry ->
-            val selectedSport = backStackEntry.arguments?.getString("selectedSport") ?: return@composable
+            val selectedSport =
+                backStackEntry.arguments?.getString("selectedSport") ?: return@composable
 
             EventInfoScreen(
-                selectedSport = selectedSport,
-                onContinue = { navController.navigate(Routes.HOME) },
+                sportId = selectedSport,
+                navController = navController,
+                onContinue = { event ->
+                    val invitedFriendsString = event.usersInvited.joinToString(",")
+                    navController.navigate(
+                        "event_summary/${event.sportId}/${event.date.seconds}/${event.centerId}/${event.maxParticipants}/$invitedFriendsString"
+                    )
+                },
                 onBack = { navController.popBackStack() }
             )
         }
 
+//  Pantalla de Resumen del Evento
+        composable("event_summary/{sport}/{date}/{location}/{maxParticipants}/{friends}") { backStackEntry ->
+            val sport = backStackEntry.arguments?.getString("sport") ?: ""
+            val date = backStackEntry.arguments?.getString("date") ?: ""
+            val location = backStackEntry.arguments?.getString("location") ?: ""
+            val maxParticipants =
+                backStackEntry.arguments?.getString("maxParticipants")?.toIntOrNull() ?: 0
+            val friends = backStackEntry.arguments?.getString("friends")?.split(",") ?: emptyList()
 
+            EventSummaryScreen(
+                sport = sport,
+                date = date,
+                location = location,
+                maxParticipants = maxParticipants,
+                selectedCourt = location, // 🔹 Se usa el ID del centro deportivo
+                friends = friends,
+                navController = navController,
+                onBack = { navController.popBackStack() }
+            )
+        }
         composable(Routes.CENTERS) {
             CentersScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
 
+        //  Nueva Pantalla para Eventos Activos
+        composable(Routes.ACTIVE_EVENTS) {
+            ActiveEventsScreen(navController = navController)
+        }
+
         //  Pantalla de Perfil
         composable(Routes.PROFILE) {
             ProfileScreen(
                 onNavigate = { route -> navController.navigate(route) },
-                onEditProfileClick = { navController.navigate(Routes.EDIT_PROFILE) }, // ✅ Ir a editar perfil
-                onHelpClick = { /* Acción de ayuda */ },
-                onTermsClick = { /* Acción de términos y condiciones */ },
-                onNotificationsClick = { /* Acción de notificaciones */ },
-                //          accion de cerrar sesion
+                onEditProfileClick = { navController.navigate(Routes.EDIT_PROFILE) },
+                onHelpClick = { navController.navigate(Routes.HELP) },  // ✅ Navega a la pantalla de ayuda
+                onTermsClick = { navController.navigate(Routes.TERMS) }, // ✅ Navega a Términos y Condiciones
+                onNotificationsClick = { navController.navigate(Routes.NOTIFICATIONS) }, // ✅ Navega a Notificaciones
             )
         }
 
@@ -127,18 +161,15 @@ fun Navigation(
             if (user != null) {
                 EditProfileScreen(
                     userViewModel = userViewModel,
-                    profileImage = user?.profileImageUrl, // ✅ Pasa la imagen del usuario
-                    userData = user!!, // ✅ Pasa el usuario completo
-                    onPhotoSelected = { /* Lógica para seleccionar foto */ },
-                    onTakePhoto = { /* Lógica para tomar foto */ },
+                    userData = user!!,
                     onBack = { navController.popBackStack() }
                 )
             } else {
-                CircularProgressIndicator() // ✅ Muestra carga si el usuario aún no está listo
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
             }
         }
-
-
     }
 }
 

@@ -1,4 +1,4 @@
-package com.example.ipsports.data
+package com.example.ipsports.data.routesNavigation
 
 object Routes {
 
@@ -12,4 +12,8 @@ object Routes {
     const val EVENT_INFO = "event_info/{selectedSport}"
     const val CENTERS = "centers"
     const val FRIENDS = "friends"
+    const val ACTIVE_EVENTS = "active_events"
+    const val HELP = "help"
+    const val TERMS = "terms"
+    const val NOTIFICATIONS = "notifications"
 }

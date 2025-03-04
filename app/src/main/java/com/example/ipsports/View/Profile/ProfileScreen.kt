@@ -29,7 +29,7 @@ import coil.compose.AsyncImage
 import com.example.ipsports.View.Reusable.BottomNavigationBar
 import com.example.ipsports.ViewModel.Autenticacion.AuthViewModel
 import com.example.ipsports.ViewModel.ui.UserViewModel
-import com.example.ipsports.data.Routes
+import com.example.ipsports.data.routesNavigation.Routes
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable

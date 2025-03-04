@@ -93,7 +93,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material.core)
     implementation(libs.coil.compose)
-
 //dependencias mas nuevas de material 01/2025
     implementation(libs.androidx.material3.v110)
     implementation(libs.ui)
@@ -130,5 +129,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.material3.v121) // 📌 Última versión de Compose Material 3
 
+//carga imagenes
+
+    implementation(libs.coil.compose.v222)
 
 }

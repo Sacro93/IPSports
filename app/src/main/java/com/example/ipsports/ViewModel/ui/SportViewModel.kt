@@ -16,7 +16,6 @@ import javax.inject.Inject
 @HiltViewModel
 class SportViewModel @Inject constructor(
     private val sportRepository: SportRepository,
-    private val saveEventUseCase: SaveEventUseCase
 
 ) : ViewModel() {
 
@@ -32,9 +31,6 @@ class SportViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
-    private val _eventId =
-        MutableStateFlow<String?>(null) // ✅ Agregado para almacenar el ID del evento
-    val eventId: StateFlow<String?> = _eventId
 
     init {
         loadSports()
@@ -59,24 +55,6 @@ class SportViewModel @Inject constructor(
         _selectedSport.value = sport
     }
 
-    /** Guarda un evento y almacena el ID generado */
-    fun saveEvent(
-        sportId: String,
-        courtId: String,
-        userId: String,
-        invitedFriends: List<String>,
-        date: Timestamp
-    ) {
-        viewModelScope.launch {
-            val result = saveEventUseCase.execute(sportId, courtId, userId, invitedFriends, date)
 
-            if (result.isSuccess) {
-                _eventId.value = result.getOrNull() // ✅ Obtiene el ID del evento creado
-            } else {
-                _errorMessage.value =
-                    "Error al guardar evento: ${result.exceptionOrNull()?.localizedMessage}"
-            }
-        }
-    }
 }
 

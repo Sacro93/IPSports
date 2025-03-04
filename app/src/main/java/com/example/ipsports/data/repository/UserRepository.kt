@@ -39,13 +39,12 @@ class UserRepository @Inject constructor(
         }
     }
 
-    /** Actualiza la información del usuario sin sobrescribir campos vacíos */
+    /** 🔹 Actualiza el usuario en Firestore */
     suspend fun updateUser(user: User): Result<Unit> {
         return try {
             usersCollection.document(user.id).set(user, SetOptions.merge()).await()
             Result.success(Unit)
         } catch (e: Exception) {
-            Log.e("UserRepository", "Error al actualizar usuario: ${e.localizedMessage}")
             Result.failure(e)
         }
     }

@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.example.ipsports.data.Routes
+import com.example.ipsports.data.routesNavigation.Routes
 
 
 // ✅ Modelo de datos para la navegación

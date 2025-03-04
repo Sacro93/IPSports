@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.draw.scale
 import androidx.navigation.NavController
 import com.example.ipsports.View.theme.Font.QS
-import com.example.ipsports.data.Routes
+import com.example.ipsports.data.routesNavigation.Routes
 import kotlinx.coroutines.delay
 
 

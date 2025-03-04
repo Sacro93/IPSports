@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.ipsports.ViewModel.ui.CenterViewModel
+import com.example.ipsports.data.model.CenterWithSports
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

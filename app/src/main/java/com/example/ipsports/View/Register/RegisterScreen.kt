@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.ipsports.data.Auth.AuthResult
-import com.example.ipsports.data.Routes
+import com.example.ipsports.data.routesNavigation.Routes
 import com.example.ipsports.data.Auth.ValidationUtils
 import com.example.ipsports.View.Reusable.ButtonPrimary
 import com.example.ipsports.View.Reusable.LocationDropdown
@@ -26,6 +26,8 @@ import com.example.ipsports.View.Reusable.ReusableInputField
 import com.example.ipsports.View.theme.Font.QS
 import com.example.ipsports.ViewModel.Autenticacion.AuthViewModel
 import com.example.ipsports.ViewModel.ui.UserViewModel
+import com.example.ipsports.data.model.User
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 /*Resumen y Consideraciones
@@ -90,6 +92,23 @@ fun RegisterScreen(
                 isRegistering = false
                 showEmailSentDialog = true
                 println("✅ Usuario registrado en Firebase Auth")
+
+                // 🔹 Obtener UID del usuario autenticado
+                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@LaunchedEffect
+
+                // 🔹 Crear el objeto User
+                val newUser = User(
+                    id = userId,
+                    email = email,
+                    name = name,
+                    surname = surname,
+                    location = location,
+                    verified = false, // Asumimos que aún no verificó el email
+                    profileImageUrl = null
+                )
+
+                // 🔹 Guardar el usuario en Firestore
+                userViewModel.saveUser(newUser)
 
                 delay(3000) // ⏳ Espera 3 segundos antes de redirigir
                 navController.navigate(Routes.LOGIN) {

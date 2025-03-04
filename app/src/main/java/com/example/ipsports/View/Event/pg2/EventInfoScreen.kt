@@ -39,12 +39,18 @@ import java.util.Date
 import java.util.Locale
 import com.google.firebase.Timestamp
 import android.app.DatePickerDialog
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.text.font.FontWeight
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.firebase.auth.FirebaseAuth
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun EventInfoScreen(
     sportId: String,
+    navController: NavController,
     onContinue: (Event) -> Unit,
     onBack: () -> Unit = {}
 ) {
@@ -59,7 +65,7 @@ fun EventInfoScreen(
     var dateTime by remember { mutableStateOf<Date?>(null) }
     var maxParticipants by remember { mutableStateOf("") }
     var selectedCenter by remember { mutableStateOf<Center?>(null) }
-    var invitedFriends by remember { mutableStateOf("") }
+    var invitedFriends by remember { mutableStateOf<List<String>>(emptyList()) }
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     //  Filtrar los centros deportivos que tienen el deporte seleccionado
@@ -67,6 +73,14 @@ fun EventInfoScreen(
         derivedStateOf {
             centersWithSports.filter { it.sports.any { sport -> sport.id == sportId } }
                 .map { it.center }
+        }
+    }
+
+    // 📌 Recuperar la lista de amigos invitados cuando volvemos de `AddFriendsScreen`
+    val navBackStackEntry = navController.currentBackStackEntryAsState().value
+    LaunchedEffect(navBackStackEntry) {
+        navBackStackEntry?.savedStateHandle?.get<List<String>>("invitedFriends")?.let { friends ->
+            invitedFriends = friends
         }
     }
 
@@ -131,27 +145,34 @@ fun EventInfoScreen(
                         // 📅 Selección de Fecha y Hora del Evento
                         EventInputField(
                             label = "Fecha y Hora del Evento",
-                            value = dateTime?.let { SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(it) } ?: "",
+                            value = dateTime?.let {
+                                SimpleDateFormat(
+                                    "dd/MM/yyyy HH:mm",
+                                    Locale.getDefault()
+                                ).format(it)
+                            } ?: "",
                             onValueChange = {},
                             fieldType = FieldType.Date,
-                            leadingIcon = { Icon(Icons.Default.DateRange, contentDescription = "Fecha y Hora") },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.DateRange,
+                                    contentDescription = "Fecha y Hora"
+                                )
+                            },
                             onClick = {
                                 val newCalendar = Calendar.getInstance()
 
-                                // 📅 Primero abrimos el DatePickerDialog
                                 DatePickerDialog(
                                     context,
                                     { _, year, month, day ->
                                         newCalendar.set(year, month, day)
 
-                                        // ⏰ Luego abrimos el TimePickerDialog cuando el usuario selecciona la fecha
                                         TimePickerDialog(
                                             context,
                                             { _, hour, minute ->
                                                 newCalendar.set(Calendar.HOUR_OF_DAY, hour)
                                                 newCalendar.set(Calendar.MINUTE, minute)
 
-                                                // ✅ Ahora `dateTime` almacena la fecha y la hora combinadas
                                                 dateTime = newCalendar.time
                                             },
                                             newCalendar.get(Calendar.HOUR_OF_DAY),
@@ -166,45 +187,82 @@ fun EventInfoScreen(
                             }
                         )
 
-                        // 📍 Selección de Centro Deportivo
                         OptionCenters(
                             selectedCenter = selectedCenter,
                             centers = availableCenters,
                             onCenterSelected = { selectedCenter = it }
                         )
 
-                        // 👥 Selección de Participantes Máximos
                         EventInputField(
                             label = "Participantes Máximos",
                             value = maxParticipants,
                             onValueChange = { maxParticipants = it },
                             fieldType = FieldType.Text,
-                            leadingIcon = { Icon(Icons.Default.Group, contentDescription = "Participantes") }
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Group,
+                                    contentDescription = "Participantes"
+                                )
+                            }
                         )
-                    }
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                        // 👥 **Botón para agregar amigos**
+                        ButtonPrimary(
+                            text = "Agregar Amigos",
+                            onClick = {
+                                navController.navigate("add_friends_screen") // 🔹 Navega a la pantalla de amigos
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                // ✔ **Botón de Confirmar**
-                ButtonPrimary(
-                    text = "Confirmar",
-                    onClick = {
-                        if (dateTime != null && selectedCenter != null) {
-                            val event = Event(
-                                sportId = sportId,
-                                centerId = selectedCenter!!.id,
-                                userId = userId,
-                                date = Timestamp(dateTime!!),
-                                maxParticipants = maxParticipants.toIntOrNull() ?: 0,
-                                invitedUsers = invitedFriends.split(",").map { it.trim() },
-                                status = "pending"
-                            )
-                            onContinue(event)
+                        // 📌 **Mostrar nombres de amigos invitados**
+                        if (invitedFriends.isNotEmpty()) {
+                            Column(modifier = Modifier.padding(top = 8.dp)) {
+                                Text(
+                                    text = "Invitados:",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                FlowRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    invitedFriends.forEach { friend ->
+                                        AssistChip(
+                                            onClick = {}, // 🔹 No hace nada, solo muestra el nombre
+                                            label = { Text(friend, color = Color.White) },
+                                            leadingIcon = {
+                                                Icon(
+                                                    imageVector = Icons.Default.Person,
+                                                    contentDescription = null,
+                                                    tint = Color.White
+                                                )
+                                            },
+                                            colors = AssistChipDefaults.assistChipColors(
+                                                containerColor = Color(0xFF2E7D32) // Verde oscuro
+                                            )
+                                        )
+                                    }
+                                }
+                            }
                         }
-                    },
-                    enabled = dateTime != null && selectedCenter != null
-                )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    ButtonPrimary(
+                        text = "Siguiente",
+                        onClick = {
+                            if (dateTime != null && selectedCenter != null) {
+                                navController.navigate(
+                                    "event_summary/${sportId}/${Timestamp(dateTime!!).seconds}/${selectedCenter!!.id}/${maxParticipants}/${invitedFriends.joinToString(",")}"
+                                )
+                            }
+                        },
+                        enabled = dateTime != null && selectedCenter != null
+                    )
+                }
             }
         }
     }
